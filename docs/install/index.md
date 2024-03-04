@@ -1,6 +1,8 @@
 To use Coder you will need to install the Coder server on your infrastructure.
 There are a number of different ways to install Coder, depending on your needs.
 
+We support two release channels: stable and latest - read the [Releases](./releases.md) page to learn more about which best suits your team.  
+
 <children>
   This page is rendered on https://coder.com/docs/v2/latest/install. Refer to the other documents in the `install/` directory for per-platform instructions.
 </children>
@@ -33,6 +35,12 @@ for reference:
 
 ```shell
 curl -fsSL https://coder.com/install.sh | sh -s -- --help
+```
+
+Ensure installation of our latest stable enterprise release with the `stable` flag:
+
+```shell
+curl -fsSL https://coder.com/install.sh | sh -s -- --stable
 ```
 
 ## Homebrew
