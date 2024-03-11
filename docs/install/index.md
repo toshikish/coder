@@ -1,7 +1,7 @@
 To use Coder you will need to install the Coder server on your infrastructure.
 There are a number of different ways to install Coder, depending on your needs.
 
-We support two release channels: stable and latest - read the [Releases](./releases.md) page to learn more about which best suits your team.  
+We support two release channels: [mainline](https://github.com/coder/coder/releases/latest) and [stable](https://github.com/coder/coder/releases/latest) - read the [Releases](./releases.md) page to learn more about which best suits your team.
 
 <children>
   This page is rendered on https://coder.com/docs/v2/latest/install. Refer to the other documents in the `install/` directory for per-platform instructions.
@@ -17,7 +17,7 @@ We support two release channels: stable and latest - read the [Releases](./relea
 
 ## Install Script
 
-The easiest way to install Coder on Linux is to use our
+The easiest way to install the latest version of Coder on Linux is to use our
 [install script](https://github.com/coder/coder/blob/main/install.sh).
 
 ```shell
@@ -37,7 +37,7 @@ for reference:
 curl -fsSL https://coder.com/install.sh | sh -s -- --help
 ```
 
-Ensure installation of our latest stable enterprise release with the `stable` flag:
+Install our latest [stable enterprise release](./releases.md) with the `stable` flag:
 
 ```shell
 curl -fsSL https://coder.com/install.sh | sh -s -- --stable
@@ -154,6 +154,12 @@ for reference:
 
 ```shell
 curl -fsSL https://coder.com/install.sh | sh -s -- --help
+```
+
+Install our latest [stable enterprise release](./releases.md) with the `stable` flag:
+
+```shell
+curl -fsSL https://coder.com/install.sh | sh -s -- --stable
 ```
 
 </div>

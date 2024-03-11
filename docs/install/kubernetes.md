@@ -7,6 +7,11 @@ You'll also want to install the
 [latest version of Coder](https://github.com/coder/coder/releases/latest)
 locally in order to log in and manage templates.
 
+> Coder supports two release channels: [mainline](https://github.com/coder/coder/releases/latest) for the true latest version of Coder, and [stable](https://github.com/coder/coder/releases/latest) for large enterprise deployments. Before installing your control plane via Helm, please read the [Releases](./releases.md) document to identify the best-suited release for your team, then specify the version using Helm's `--version` flag.
+
+> The versions for both [stable]() and [mainline]() are automatically filled in this page.
+
+
 ## Install Coder with Helm
 
 1. Create a namespace for Coder, such as `coder`:
@@ -112,10 +117,23 @@ locally in order to log in and manage templates.
 
 1. Run the following command to install the chart in your cluster.
 
+  For the [**stable**]() Coder release:
+
    ```shell
    helm install coder coder-v2/coder \
        --namespace coder \
-       --values values.yaml
+       --values values.yaml \
+       --version 2.8.3
+   ```
+
+  For the [**mainline**]() Coder release:
+
+
+   ```shell
+   helm install coder coder-v2/coder \
+       --namespace coder \
+       --values values.yaml \
+       --version 2.9.0
    ```
 
    You can watch Coder start up by running `kubectl get pods -n coder`. Once
@@ -135,11 +153,24 @@ locally in order to log in and manage templates.
 To upgrade Coder in the future or change values, you can run the following
 command:
 
+For the [**stable**]() Coder release:
+
 ```shell
 helm repo update
 helm upgrade coder coder-v2/coder \
   --namespace coder \
-  -f values.yaml
+  -f values.yaml \
+  --version 2.8.3
+```
+
+For the [**mainline**]() Coder release:
+
+```shell
+helm repo update
+helm upgrade coder coder-v2/coder \
+  --namespace coder \
+  -f values.yaml \
+  --version 2.9.0
 ```
 
 ## Kubernetes Security Reference
