@@ -29,6 +29,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/coder/pretty"
+	"github.com/coder/serpent/completion"
 
 	"github.com/coder/coder/v2/buildinfo"
 	"github.com/coder/coder/v2/cli/cliui"
@@ -122,6 +123,9 @@ func (r *RootCmd) Core() []*serpent.Command {
 		r.stop(),
 		r.unfavorite(),
 		r.update(),
+
+		// Meta
+		completion.InstallCommand(),
 
 		// Hidden
 		r.gitssh(),
