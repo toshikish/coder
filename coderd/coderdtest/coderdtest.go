@@ -146,6 +146,7 @@ type Options struct {
 	WorkspaceAppsStatsCollectorOptions workspaceapps.StatsCollectorOptions
 	AllowWorkspaceRenames              bool
 	NewTicker                          func(duration time.Duration) (<-chan time.Time, func())
+	DBRollupInterval                   time.Duration
 }
 
 // New constructs a codersdk client connected to an in-memory API instance.
@@ -454,6 +455,7 @@ func NewOptions(t testing.TB, options *Options) (func(http.Handler), context.Can
 			WorkspaceAppsStatsCollectorOptions: options.WorkspaceAppsStatsCollectorOptions,
 			AllowWorkspaceRenames:              options.AllowWorkspaceRenames,
 			NewTicker:                          options.NewTicker,
+			DBRollupInterval:                   options.DBRollupInterval,
 		}
 }
 

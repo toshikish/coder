@@ -47,6 +47,7 @@ import (
 	"github.com/coder/coder/v2/coderd/batchstats"
 	"github.com/coder/coder/v2/coderd/database"
 	"github.com/coder/coder/v2/coderd/database/dbauthz"
+	"github.com/coder/coder/v2/coderd/database/dbrollup"
 	"github.com/coder/coder/v2/coderd/database/dbtime"
 	"github.com/coder/coder/v2/coderd/database/pubsub"
 	"github.com/coder/coder/v2/coderd/externalauth"
@@ -179,6 +180,7 @@ type Options struct {
 
 	UpdateAgentMetrics func(ctx context.Context, labels prometheusmetrics.AgentMetricLabels, metrics []*agentproto.Stats_Metric)
 	StatsBatcher       *batchstats.Batcher
+	DBRollupInterval   time.Duration
 
 	WorkspaceAppsStatsCollectorOptions workspaceapps.StatsCollectorOptions
 
@@ -338,6 +340,9 @@ func New(options *Options) *API {
 	if options.StatsBatcher == nil {
 		panic("developer error: options.StatsBatcher is nil")
 	}
+	if options.DBRollupInterval == 0 {
+		options.DBRollupInterval = dbrollup.DefaultInterval
+	}
 
 	siteCacheDir := options.CacheDir
 	if siteCacheDir != "" {
@@ -404,7 +409,14 @@ func New(options *Options) *API {
 			ctx,
 			options.Logger.Named("acquirer"),
 			options.Database,
-			options.Pubsub),
+			options.Pubsub,
+		),
+		rolluper: dbrollup.New(
+			ctx,
+			options.Logger,
+			options.Database,
+			options.DBRollupInterval,
+		),
 	}
 
 	api.AppearanceFetcher.Store(&appearance.DefaultFetcher)
@@ -1178,6 +1190,10 @@ type API struct {
 
 	statsBatcher *batchstats.Batcher
 
+	// rolluper rolls up template usage stats from raw agent and app
+	// stats. This is used to provide insights in the WebUI.
+	rolluper *dbrollup.Rolluper
+
 	Acquirer *provisionerdserver.Acquirer
 }
 
@@ -1190,6 +1206,7 @@ func (api *API) Close() error {
 	api.WebsocketWaitGroup.Wait()
 	api.WebsocketWaitMutex.Unlock()
 
+	api.rolluper.Close()
 	api.metricsCache.Close()
 	if api.updateChecker != nil {
 		api.updateChecker.Close()
