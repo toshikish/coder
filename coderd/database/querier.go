@@ -179,7 +179,14 @@ type sqlcQuerier interface {
 	GetTemplateByOrganizationAndName(ctx context.Context, arg GetTemplateByOrganizationAndNameParams) (Template, error)
 	GetTemplateDAUs(ctx context.Context, arg GetTemplateDAUsParams) ([]GetTemplateDAUsRow, error)
 	// GetTemplateInsights returns the aggregate user-produced usage of all
-	// workspaces in a given timeframe.
+	// workspaces in a given timeframe. The template IDs, active users, and
+	// usage_seconds all reflect any usage in the template, including apps.
+	//
+	// When combining data from multiple templates, we must make a guess at
+	// how the user behaved for the 30 minute interval. In this case we make
+	// the assumption that if the user used two workspaces for 15 minutes,
+	// they did so sequentially, thus we sum the usage up to a maximum of
+	// 30 minutes with LEAST(SUM(n), 30).
 	GetTemplateInsights(ctx context.Context, arg GetTemplateInsightsParams) (GetTemplateInsightsRow, error)
 	// GetTemplateInsightsByInterval returns all intervals between start and end
 	// time, if end time is a partial interval, it will be included in the results and
