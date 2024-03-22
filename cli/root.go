@@ -113,6 +113,7 @@ func (r *RootCmd) Core() []*serpent.Command {
 		r.ping(),
 		r.rename(),
 		r.restart(),
+		r.run(),
 		r.schedules(),
 		r.show(),
 		r.speedtest(),
