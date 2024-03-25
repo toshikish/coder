@@ -98,6 +98,10 @@ func (obj *ObjFile) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjFile) RelationTemplate_version() string {
+	return "template_version"
+}
+
 // Template_version schema.zed:240
 // Relationship: file:<id>#template_version@template_version:<id>
 func (obj *ObjFile) Template_version(subs ...*ObjTemplate_version) *ObjFile {
@@ -105,7 +109,7 @@ func (obj *ObjFile) Template_version(subs ...*ObjTemplate_version) *ObjFile {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_version",
+			Relation: obj.RelationTemplate_version(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -151,6 +155,10 @@ func (obj *ObjGroup) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjGroup) RelationMember() string {
+	return "member"
+}
+
 // MemberUser schema.zed:19
 // Relationship: group:<id>#member@user:<id>
 func (obj *ObjGroup) MemberUser(subs ...*ObjUser) *ObjGroup {
@@ -158,7 +166,7 @@ func (obj *ObjGroup) MemberUser(subs ...*ObjUser) *ObjGroup {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -176,7 +184,7 @@ func (obj *ObjGroup) MemberGroup(subs ...*ObjGroup) *ObjGroup {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "member",
@@ -192,7 +200,7 @@ func (obj *ObjGroup) MemberGroup(subs ...*ObjGroup) *ObjGroup {
 func (obj *ObjGroup) MemberWildcard() *ObjGroup {
 	obj.Builder.AddRelationship(v1.Relationship{
 		Resource: obj.Obj,
-		Relation: "member",
+		Relation: obj.RelationMember(),
 		Subject: &v1.SubjectReference{
 			Object: &v1.ObjectReference{
 				ObjectType: "user",
@@ -211,25 +219,7 @@ func (obj *ObjGroup) CanMembership(ctx context.Context) (context.Context, string
 	return ctx, "membership", obj.Object()
 }
 
-// AsAnyMember
-// group:<id>#member
-func (obj *ObjGroup) AsAnyMember() *ObjGroup {
-	return &ObjGroup{
-		Obj:              obj.Object(),
-		OptionalRelation: "member",
-		Builder:          obj.Builder,
-	}
-}
-
 // AsAnyMembership
-// platform:<id>#user_admin
-// workspace:<id>#viewer
-// workspace:<id>#editor
-// workspace:<id>#deletor
-// workspace:<id>#selector
-// workspace:<id>#connector
-// workspace:<id>#for_user
-// org_role:<id>#member
 // organization:<id>#member
 // organization:<id>#default_permissions
 // organization:<id>#member_creator
@@ -243,10 +233,28 @@ func (obj *ObjGroup) AsAnyMember() *ObjGroup {
 // organization:<id>#template_editor
 // organization:<id>#template_permission_manager
 // organization:<id>#template_insights_viewer
+// platform:<id>#user_admin
+// workspace:<id>#viewer
+// workspace:<id>#editor
+// workspace:<id>#deletor
+// workspace:<id>#selector
+// workspace:<id>#connector
+// workspace:<id>#for_user
+// org_role:<id>#member
 func (obj *ObjGroup) AsAnyMembership() *ObjGroup {
 	return &ObjGroup{
 		Obj:              obj.Object(),
 		OptionalRelation: "membership",
+		Builder:          obj.Builder,
+	}
+}
+
+// AsAnyMember
+// group:<id>#member
+func (obj *ObjGroup) AsAnyMember() *ObjGroup {
+	return &ObjGroup{
+		Obj:              obj.Object(),
+		OptionalRelation: "member",
 		Builder:          obj.Builder,
 	}
 }
@@ -279,6 +287,14 @@ func (obj *ObjJob) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjJob) RelationTemplate_version() string {
+	return "template_version"
+}
+
+func (obj *ObjJob) RelationWorkspace_build() string {
+	return "workspace_build"
+}
+
 // Template_version schema.zed:249
 // Relationship: job:<id>#template_version@template_version:<id>
 func (obj *ObjJob) Template_version(subs ...*ObjTemplate_version) *ObjJob {
@@ -286,7 +302,7 @@ func (obj *ObjJob) Template_version(subs ...*ObjTemplate_version) *ObjJob {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_version",
+			Relation: obj.RelationTemplate_version(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -304,7 +320,7 @@ func (obj *ObjJob) Workspace_build(subs ...*ObjWorkspace_build) *ObjJob {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_build",
+			Relation: obj.RelationWorkspace_build(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -349,6 +365,14 @@ func (obj *ObjOrg_role) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjOrg_role) RelationMember() string {
+	return "member"
+}
+
+func (obj *ObjOrg_role) RelationOrganization() string {
+	return "organization"
+}
+
 // Organization schema.zed:46
 // Relationship: org_role:<id>#organization@organization:<id>
 func (obj *ObjOrg_role) Organization(subs ...*ObjOrganization) *ObjOrg_role {
@@ -356,7 +380,7 @@ func (obj *ObjOrg_role) Organization(subs ...*ObjOrganization) *ObjOrg_role {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "organization",
+			Relation: obj.RelationOrganization(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -374,7 +398,7 @@ func (obj *ObjOrg_role) MemberUser(subs ...*ObjUser) *ObjOrg_role {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -392,7 +416,7 @@ func (obj *ObjOrg_role) MemberGroup(subs ...*ObjGroup) *ObjOrg_role {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -457,6 +481,62 @@ func (obj *ObjOrganization) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjOrganization) RelationDefault_permissions() string {
+	return "default_permissions"
+}
+
+func (obj *ObjOrganization) RelationMember() string {
+	return "member"
+}
+
+func (obj *ObjOrganization) RelationMember_creator() string {
+	return "member_creator"
+}
+
+func (obj *ObjOrganization) RelationPlatform() string {
+	return "platform"
+}
+
+func (obj *ObjOrganization) RelationTemplate_creator() string {
+	return "template_creator"
+}
+
+func (obj *ObjOrganization) RelationTemplate_deletor() string {
+	return "template_deletor"
+}
+
+func (obj *ObjOrganization) RelationTemplate_editor() string {
+	return "template_editor"
+}
+
+func (obj *ObjOrganization) RelationTemplate_insights_viewer() string {
+	return "template_insights_viewer"
+}
+
+func (obj *ObjOrganization) RelationTemplate_permission_manager() string {
+	return "template_permission_manager"
+}
+
+func (obj *ObjOrganization) RelationTemplate_viewer() string {
+	return "template_viewer"
+}
+
+func (obj *ObjOrganization) RelationWorkspace_creator() string {
+	return "workspace_creator"
+}
+
+func (obj *ObjOrganization) RelationWorkspace_deletor() string {
+	return "workspace_deletor"
+}
+
+func (obj *ObjOrganization) RelationWorkspace_editor() string {
+	return "workspace_editor"
+}
+
+func (obj *ObjOrganization) RelationWorkspace_viewer() string {
+	return "workspace_viewer"
+}
+
 // Platform schema.zed:58
 // Relationship: organization:<id>#platform@platform:<id>
 func (obj *ObjOrganization) Platform(subs ...*ObjPlatform) *ObjOrganization {
@@ -464,7 +544,7 @@ func (obj *ObjOrganization) Platform(subs ...*ObjPlatform) *ObjOrganization {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "platform",
+			Relation: obj.RelationPlatform(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -482,7 +562,7 @@ func (obj *ObjOrganization) MemberGroup(subs ...*ObjGroup) *ObjOrganization {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -500,7 +580,7 @@ func (obj *ObjOrganization) MemberUser(subs ...*ObjUser) *ObjOrganization {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member",
+			Relation: obj.RelationMember(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -518,7 +598,7 @@ func (obj *ObjOrganization) Default_permissionsGroup(subs ...*ObjGroup) *ObjOrga
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "default_permissions",
+			Relation: obj.RelationDefault_permissions(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -536,7 +616,7 @@ func (obj *ObjOrganization) Default_permissionsUser(subs ...*ObjUser) *ObjOrgani
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "default_permissions",
+			Relation: obj.RelationDefault_permissions(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -554,7 +634,7 @@ func (obj *ObjOrganization) Member_creatorGroup(subs ...*ObjGroup) *ObjOrganizat
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member_creator",
+			Relation: obj.RelationMember_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -572,7 +652,7 @@ func (obj *ObjOrganization) Member_creatorUser(subs ...*ObjUser) *ObjOrganizatio
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member_creator",
+			Relation: obj.RelationMember_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -590,7 +670,7 @@ func (obj *ObjOrganization) Member_creatorOrg_role(subs ...*ObjOrg_role) *ObjOrg
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "member_creator",
+			Relation: obj.RelationMember_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -608,7 +688,7 @@ func (obj *ObjOrganization) Workspace_viewerGroup(subs ...*ObjGroup) *ObjOrganiz
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_viewer",
+			Relation: obj.RelationWorkspace_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -626,7 +706,7 @@ func (obj *ObjOrganization) Workspace_viewerUser(subs ...*ObjUser) *ObjOrganizat
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_viewer",
+			Relation: obj.RelationWorkspace_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -644,7 +724,7 @@ func (obj *ObjOrganization) Workspace_viewerOrg_role(subs ...*ObjOrg_role) *ObjO
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_viewer",
+			Relation: obj.RelationWorkspace_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -662,7 +742,7 @@ func (obj *ObjOrganization) Workspace_creatorGroup(subs ...*ObjGroup) *ObjOrgani
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_creator",
+			Relation: obj.RelationWorkspace_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -680,7 +760,7 @@ func (obj *ObjOrganization) Workspace_creatorUser(subs ...*ObjUser) *ObjOrganiza
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_creator",
+			Relation: obj.RelationWorkspace_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -698,7 +778,7 @@ func (obj *ObjOrganization) Workspace_creatorOrg_role(subs ...*ObjOrg_role) *Obj
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_creator",
+			Relation: obj.RelationWorkspace_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -716,7 +796,7 @@ func (obj *ObjOrganization) Workspace_deletorGroup(subs ...*ObjGroup) *ObjOrgani
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_deletor",
+			Relation: obj.RelationWorkspace_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -734,7 +814,7 @@ func (obj *ObjOrganization) Workspace_deletorUser(subs ...*ObjUser) *ObjOrganiza
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_deletor",
+			Relation: obj.RelationWorkspace_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -752,7 +832,7 @@ func (obj *ObjOrganization) Workspace_deletorOrg_role(subs ...*ObjOrg_role) *Obj
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_deletor",
+			Relation: obj.RelationWorkspace_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -770,7 +850,7 @@ func (obj *ObjOrganization) Workspace_editorGroup(subs ...*ObjGroup) *ObjOrganiz
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_editor",
+			Relation: obj.RelationWorkspace_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -788,7 +868,7 @@ func (obj *ObjOrganization) Workspace_editorUser(subs ...*ObjUser) *ObjOrganizat
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_editor",
+			Relation: obj.RelationWorkspace_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -806,7 +886,7 @@ func (obj *ObjOrganization) Workspace_editorOrg_role(subs ...*ObjOrg_role) *ObjO
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace_editor",
+			Relation: obj.RelationWorkspace_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -824,7 +904,7 @@ func (obj *ObjOrganization) Template_viewerGroup(subs ...*ObjGroup) *ObjOrganiza
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_viewer",
+			Relation: obj.RelationTemplate_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -842,7 +922,7 @@ func (obj *ObjOrganization) Template_viewerUser(subs ...*ObjUser) *ObjOrganizati
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_viewer",
+			Relation: obj.RelationTemplate_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -860,7 +940,7 @@ func (obj *ObjOrganization) Template_viewerOrg_role(subs ...*ObjOrg_role) *ObjOr
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_viewer",
+			Relation: obj.RelationTemplate_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -878,7 +958,7 @@ func (obj *ObjOrganization) Template_creatorGroup(subs ...*ObjGroup) *ObjOrganiz
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_creator",
+			Relation: obj.RelationTemplate_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -896,7 +976,7 @@ func (obj *ObjOrganization) Template_creatorUser(subs ...*ObjUser) *ObjOrganizat
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_creator",
+			Relation: obj.RelationTemplate_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -914,7 +994,7 @@ func (obj *ObjOrganization) Template_creatorOrg_role(subs ...*ObjOrg_role) *ObjO
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_creator",
+			Relation: obj.RelationTemplate_creator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -932,7 +1012,7 @@ func (obj *ObjOrganization) Template_deletorGroup(subs ...*ObjGroup) *ObjOrganiz
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_deletor",
+			Relation: obj.RelationTemplate_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -950,7 +1030,7 @@ func (obj *ObjOrganization) Template_deletorUser(subs ...*ObjUser) *ObjOrganizat
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_deletor",
+			Relation: obj.RelationTemplate_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -968,7 +1048,7 @@ func (obj *ObjOrganization) Template_deletorOrg_role(subs ...*ObjOrg_role) *ObjO
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_deletor",
+			Relation: obj.RelationTemplate_deletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -986,7 +1066,7 @@ func (obj *ObjOrganization) Template_editorGroup(subs ...*ObjGroup) *ObjOrganiza
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_editor",
+			Relation: obj.RelationTemplate_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1004,7 +1084,7 @@ func (obj *ObjOrganization) Template_editorUser(subs ...*ObjUser) *ObjOrganizati
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_editor",
+			Relation: obj.RelationTemplate_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1022,7 +1102,7 @@ func (obj *ObjOrganization) Template_editorOrg_role(subs ...*ObjOrg_role) *ObjOr
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_editor",
+			Relation: obj.RelationTemplate_editor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -1040,7 +1120,7 @@ func (obj *ObjOrganization) Template_permission_managerGroup(subs ...*ObjGroup) 
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_permission_manager",
+			Relation: obj.RelationTemplate_permission_manager(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1058,7 +1138,7 @@ func (obj *ObjOrganization) Template_permission_managerUser(subs ...*ObjUser) *O
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_permission_manager",
+			Relation: obj.RelationTemplate_permission_manager(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1076,7 +1156,7 @@ func (obj *ObjOrganization) Template_permission_managerOrg_role(subs ...*ObjOrg_
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_permission_manager",
+			Relation: obj.RelationTemplate_permission_manager(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -1094,7 +1174,7 @@ func (obj *ObjOrganization) Template_insights_viewerGroup(subs ...*ObjGroup) *Ob
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_insights_viewer",
+			Relation: obj.RelationTemplate_insights_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1112,7 +1192,7 @@ func (obj *ObjOrganization) Template_insights_viewerUser(subs ...*ObjUser) *ObjO
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_insights_viewer",
+			Relation: obj.RelationTemplate_insights_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1130,7 +1210,7 @@ func (obj *ObjOrganization) Template_insights_viewerOrg_role(subs ...*ObjOrg_rol
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template_insights_viewer",
+			Relation: obj.RelationTemplate_insights_viewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "has_role",
@@ -1269,6 +1349,14 @@ func (obj *ObjPlatform) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjPlatform) RelationAdministrator() string {
+	return "administrator"
+}
+
+func (obj *ObjPlatform) RelationUser_admin() string {
+	return "user_admin"
+}
+
 // Administrator schema.zed:31
 // Relationship: platform:<id>#administrator@user:<id>
 func (obj *ObjPlatform) Administrator(subs ...*ObjUser) *ObjPlatform {
@@ -1276,7 +1364,7 @@ func (obj *ObjPlatform) Administrator(subs ...*ObjUser) *ObjPlatform {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "administrator",
+			Relation: obj.RelationAdministrator(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1294,7 +1382,7 @@ func (obj *ObjPlatform) User_adminUser(subs ...*ObjUser) *ObjPlatform {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "user_admin",
+			Relation: obj.RelationUser_admin(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1312,7 +1400,7 @@ func (obj *ObjPlatform) User_adminGroup(subs ...*ObjGroup) *ObjPlatform {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "user_admin",
+			Relation: obj.RelationUser_admin(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1371,6 +1459,14 @@ func (obj *ObjTemplate) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjTemplate) RelationOrganization() string {
+	return "organization"
+}
+
+func (obj *ObjTemplate) RelationWorkspace() string {
+	return "workspace"
+}
+
 // Organization schema.zed:212
 // Relationship: template:<id>#organization@organization:<id>
 func (obj *ObjTemplate) Organization(subs ...*ObjOrganization) *ObjTemplate {
@@ -1378,7 +1474,7 @@ func (obj *ObjTemplate) Organization(subs ...*ObjOrganization) *ObjTemplate {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "organization",
+			Relation: obj.RelationOrganization(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1396,7 +1492,7 @@ func (obj *ObjTemplate) Workspace(subs ...*ObjWorkspace) *ObjTemplate {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace",
+			Relation: obj.RelationWorkspace(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1481,6 +1577,10 @@ func (obj *ObjTemplate_version) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjTemplate_version) RelationTemplate() string {
+	return "template"
+}
+
 // Template schema.zed:234
 // Relationship: template_version:<id>#template@template:<id>
 func (obj *ObjTemplate_version) Template(subs ...*ObjTemplate) *ObjTemplate_version {
@@ -1488,7 +1588,7 @@ func (obj *ObjTemplate_version) Template(subs ...*ObjTemplate) *ObjTemplate_vers
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "template",
+			Relation: obj.RelationTemplate(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1562,6 +1662,34 @@ func (obj *ObjWorkspace) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjWorkspace) RelationConnector() string {
+	return "connector"
+}
+
+func (obj *ObjWorkspace) RelationDeletor() string {
+	return "deletor"
+}
+
+func (obj *ObjWorkspace) RelationEditor() string {
+	return "editor"
+}
+
+func (obj *ObjWorkspace) RelationFor_user() string {
+	return "for_user"
+}
+
+func (obj *ObjWorkspace) RelationOrganization() string {
+	return "organization"
+}
+
+func (obj *ObjWorkspace) RelationSelector() string {
+	return "selector"
+}
+
+func (obj *ObjWorkspace) RelationViewer() string {
+	return "viewer"
+}
+
 // Organization schema.zed:153
 // Relationship: workspace:<id>#organization@organization:<id>
 func (obj *ObjWorkspace) Organization(subs ...*ObjOrganization) *ObjWorkspace {
@@ -1569,7 +1697,7 @@ func (obj *ObjWorkspace) Organization(subs ...*ObjOrganization) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "organization",
+			Relation: obj.RelationOrganization(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1587,7 +1715,7 @@ func (obj *ObjWorkspace) ViewerGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "viewer",
+			Relation: obj.RelationViewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1605,7 +1733,7 @@ func (obj *ObjWorkspace) ViewerUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "viewer",
+			Relation: obj.RelationViewer(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1623,7 +1751,7 @@ func (obj *ObjWorkspace) EditorGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "editor",
+			Relation: obj.RelationEditor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1641,7 +1769,7 @@ func (obj *ObjWorkspace) EditorUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "editor",
+			Relation: obj.RelationEditor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1659,7 +1787,7 @@ func (obj *ObjWorkspace) DeletorGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "deletor",
+			Relation: obj.RelationDeletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1677,7 +1805,7 @@ func (obj *ObjWorkspace) DeletorUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "deletor",
+			Relation: obj.RelationDeletor(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1695,7 +1823,7 @@ func (obj *ObjWorkspace) SelectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "selector",
+			Relation: obj.RelationSelector(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1713,7 +1841,7 @@ func (obj *ObjWorkspace) SelectorUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "selector",
+			Relation: obj.RelationSelector(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1731,7 +1859,7 @@ func (obj *ObjWorkspace) ConnectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "connector",
+			Relation: obj.RelationConnector(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1749,7 +1877,7 @@ func (obj *ObjWorkspace) ConnectorUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "connector",
+			Relation: obj.RelationConnector(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1767,7 +1895,7 @@ func (obj *ObjWorkspace) For_userGroup(subs ...*ObjGroup) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "for_user",
+			Relation: obj.RelationFor_user(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "membership",
@@ -1785,7 +1913,7 @@ func (obj *ObjWorkspace) For_userUser(subs ...*ObjUser) *ObjWorkspace {
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "for_user",
+			Relation: obj.RelationFor_user(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1863,6 +1991,10 @@ func (obj *ObjWorkspace_agent) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjWorkspace_agent) RelationWorkspace() string {
+	return "workspace"
+}
+
 // Workspace schema.zed:196
 // Relationship: workspace_agent:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_agent) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_agent {
@@ -1870,7 +2002,7 @@ func (obj *ObjWorkspace_agent) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_ag
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace",
+			Relation: obj.RelationWorkspace(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1916,6 +2048,10 @@ func (obj *ObjWorkspace_build) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjWorkspace_build) RelationWorkspace() string {
+	return "workspace"
+}
+
 // Workspace schema.zed:187
 // Relationship: workspace_build:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_build) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_build {
@@ -1923,7 +2059,7 @@ func (obj *ObjWorkspace_build) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_bu
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace",
+			Relation: obj.RelationWorkspace(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",
@@ -1968,6 +2104,10 @@ func (obj *ObjWorkspace_resources) AsSubject() *v1.SubjectReference {
 	}
 }
 
+func (obj *ObjWorkspace_resources) RelationWorkspace() string {
+	return "workspace"
+}
+
 // Workspace schema.zed:202
 // Relationship: workspace_resources:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_resources) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_resources {
@@ -1975,7 +2115,7 @@ func (obj *ObjWorkspace_resources) Workspace(subs ...*ObjWorkspace) *ObjWorkspac
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "workspace",
+			Relation: obj.RelationWorkspace(),
 			Subject: &v1.SubjectReference{
 				Object:           sub.Obj,
 				OptionalRelation: "",

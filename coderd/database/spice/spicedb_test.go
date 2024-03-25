@@ -2,6 +2,7 @@ package spice_test
 
 import (
 	"database/sql"
+	"strings"
 	"testing"
 	"time"
 
@@ -271,7 +272,7 @@ func TestCustomOrganizationRoles(t *testing.T) {
 
 	err = db.UpsertCustomOrganizationRole(spice.WithDebugging(ctx), roleName, def.ID, func(role *policy.ObjOrg_role, organization *policy.ObjOrganization) {
 		organization.
-			Template_creatorOrg_role(role).         // Create
+			// Intentionally omit create_template to check it was removed.
 			Template_editorOrg_role(role).          // Edit
 			Template_insights_viewerOrg_role(role). // See insights
 			Member_creatorOrg_role(role)            // Create org members
@@ -281,4 +282,24 @@ func TestCustomOrganizationRoles(t *testing.T) {
 	// Now it will work!
 	err = db.Check(policy.New().Organization(def.ID).CanCreate_org_member(userCtx))
 	require.NoError(t, err)
+
+	// We removed this perm
+	err = db.Check(policy.New().Organization(def.ID).CanCreate_template(userCtx))
+	require.Error(t, err)
+
+	// And this perm still exists
+	err = db.Check(policy.New().Organization(def.ID).CanEdit_templates(userCtx))
+	require.NoError(t, err)
+
+	// You can see what perms the role has.
+	perms, err := db.OrganizationRolePermissions(ctx, roleName, def.ID)
+	require.NoError(t, err)
+	// Role template_creator has permissions: member_creator, template_editor, template_insights_viewer
+	t.Logf("Role %s has permissions: %s", roleName, strings.Join(perms, ", "))
+
+	// Who has the role?
+	assigned, err := db.OrganizationRoleAssignedActors(ctx, roleName)
+	require.NoError(t, err)
+	// Role template_creator is assigned to: e902b0fa-58d1-4979-9102-16047cb56173
+	t.Logf("Role %s is assigned to: %s", roleName, strings.Join(assigned, ", "))
 }

@@ -83,6 +83,16 @@ func GenerateRelationships() {
 
 	// Validations enumerate who can do the given action.
 	Playground.Validate(stevenWorkspace.CanView, stevenWorkspace.CanSsh, stevenWorkspace.CanEdit)
+
+	// Add a custom role
+	templateAuditRole := Playground.Org_role(policy.String("template_auditor")).
+		Organization(companyOrganization).
+		MemberGroup(groupCostControl)
+
+	companyOrganization.
+		Template_editorOrg_role(templateAuditRole).
+		Template_insights_viewerOrg_role(templateAuditRole)
+
 }
 
 // createWorkspace

@@ -152,7 +152,10 @@ type objectDefinition struct {
 
 	Filename        string
 	DirectRelations []objectDirectRelation
-	Permissions     []objectPermission
+	// RelationConstants are the names of the relations that are defined in the schema.
+	// This just makes it easier to reference the relations in the code.
+	RelationConstants map[string]struct{}
+	Permissions       []objectPermission
 	// OptionalRelations keep track of which optional relations are being
 	// referenced in this object definition. We can use this to make helpers
 	// to add optional relations when using the object as a subject.
@@ -192,8 +195,9 @@ type objectPermission struct {
 var permissionSchema = regexp.MustCompile(`^[^{]*{\s*(.*)\s}$`)
 
 func newDef(obj *core.NamespaceDefinition) objectDefinition {
-	d := objectDefinition{
+	parsedObject := objectDefinition{
 		NamespaceDefinition: obj,
+		RelationConstants:   make(map[string]struct{}),
 	}
 	rels := make([]objectDirectRelation, 0)
 	perms := make([]objectPermission, 0)
@@ -309,6 +313,7 @@ func newDef(obj *core.NamespaceDefinition) objectDefinition {
 				Subject:        &subj,
 				OptionalCaveat: nil,
 			})
+			parsedObject.RelationConstants[r.Name] = struct{}{}
 			multipleSubjects = append(multipleSubjects, objectDirectRelation{
 				LinePos:      linePos,
 				Comment:      fmt.Sprintf("Relationship: %s", comment),
@@ -335,10 +340,10 @@ func newDef(obj *core.NamespaceDefinition) objectDefinition {
 
 		rels = append(rels, multipleSubjects...)
 	}
-	d.DirectRelations = rels
-	d.Permissions = perms
-	d.OptionalRelations = optRels
-	return d
+	parsedObject.DirectRelations = rels
+	parsedObject.Permissions = perms
+	parsedObject.OptionalRelations = optRels
+	return parsedObject
 }
 
 func capitalize(name string) string {

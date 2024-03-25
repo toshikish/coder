@@ -28,6 +28,12 @@ func (obj *Obj{{ capitalize $outerName }}) AsSubject() *v1.SubjectReference {
 	}
 }
 
+{{ range $relation, $_ := .RelationConstants }}
+func (obj *Obj{{ capitalize $outerName }}) Relation{{ capitalize $relation }}() string{
+	return "{{ $relation }}"
+}
+{{ end }}
+
 {{ range $index, $element := .DirectRelations }}
 {{/* Wildcard '*' is a keyword for spicedb to represent 'all objects of this type' */}}
 {{ if eq $element.Subject.Object.ObjectId "*" }}
@@ -36,7 +42,7 @@ func (obj *Obj{{ capitalize $outerName }}) AsSubject() *v1.SubjectReference {
 func (obj *Obj{{ capitalize $outerName }}) {{ capitalize $element.RelationName }}Wildcard() *Obj{{ capitalize $outerName }}{
 	obj.Builder.AddRelationship(v1.Relationship{
 		Resource: obj.Obj,
-		Relation: "{{ $element.RelationName }}",
+		Relation: obj.Relation{{ capitalize $element.RelationName }}(),
 		Subject: &v1.SubjectReference{
 			Object: &v1.ObjectReference {
 				ObjectType: "{{ $element.Subject.Object.ObjectType }}",
@@ -57,7 +63,7 @@ func (obj *Obj{{ capitalize $outerName }}) {{ capitalize $element.FunctionName }
 		sub := subs[i]
 		obj.Builder.AddRelationship(v1.Relationship{
 			Resource: obj.Obj,
-			Relation: "{{ $element.RelationName }}",
+			Relation: obj.Relation{{ capitalize $element.RelationName }}(),
 			Subject: &v1.SubjectReference{
 				Object: sub.Obj,
 				OptionalRelation: "{{ $element.Subject.OptionalRelation }}",
