@@ -158,6 +158,8 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 		}
 		defer traceFile.Close()
 
+		_, _ = fmt.Fprintf(os.Stderr, "Tracing to %s\n", goTraceFilePath)
+
 		if err := trace.Start(traceFile); err != nil {
 			panic(fmt.Sprintf("failed to start trace: %v", err))
 		}
@@ -171,6 +173,8 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 			panic(fmt.Sprintf("failed to create CPU profile file: %v", err))
 		}
 		defer cpuProfileFile.Close()
+
+		_, _ = fmt.Fprintf(os.Stderr, "CPU profiling to %s\n", goCPUProfilePath)
 
 		if err := pprof.StartCPUProfile(cpuProfileFile); err != nil {
 			panic(fmt.Sprintf("failed to start CPU profile: %v", err))
