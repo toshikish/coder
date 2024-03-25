@@ -14,6 +14,59 @@ import (
 	"github.com/coder/coder/v2/coderd/database/spice/policy"
 )
 
+// TODO: This code could use some love. Dedup (DRY) a lot of this.
+
+// OrganizationCustomRoles returns all custom roles for a given organization.
+// Returns a map of [rolename] -> [permissions].
+func (s *SpiceDB) OrganizationCustomRoles(ctx context.Context, orgID uuid.UUID) (map[string][]string, error) {
+	opts := []grpc.CallOption{}
+	if s.debugging(ctx) {
+		debugCtx, opt, callback := debugSpiceDBRPC(ctx, s.logger)
+		opts = append(opts, opt)
+		defer callback()
+		ctx = debugCtx
+	}
+
+	builder := policy.New()
+	org := builder.Organization(orgID).Object()
+	role := builder.Org_role(policy.String("")).Object()
+
+	resp, err := s.permCli.ReadRelationships(context.Background(), &v1.ReadRelationshipsRequest{
+		Consistency: &v1.Consistency{Requirement: &v1.Consistency_AtLeastAsFresh{s.zedToken.Load()}},
+		RelationshipFilter: &v1.RelationshipFilter{
+			ResourceType:       org.ObjectType,
+			OptionalResourceId: org.ObjectId,
+			OptionalSubjectFilter: &v1.SubjectFilter{
+				SubjectType: role.ObjectType,
+			},
+		},
+		OptionalLimit:  0,
+		OptionalCursor: nil,
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	roles := map[string][]string{}
+	for true {
+		rel, err := resp.Recv()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return nil, xerrors.Errorf("failed to find assigned: %w", err)
+		}
+
+		roleName := rel.Relationship.Subject.Object.ObjectId
+		rolePerm := rel.Relationship.Relation
+		if _, ok := roles[roleName]; !ok {
+			roles[roleName] = []string{}
+		}
+		roles[roleName] = append(roles[roleName], rolePerm)
+	}
+	return roles, nil
+}
+
 // OrganizationRoleAssignedActors returns the actors (users/groups) assigned to the
 // given role in the given organization.
 // TODO: the name of this method is very confusing.

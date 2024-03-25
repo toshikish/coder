@@ -302,4 +302,12 @@ func TestCustomOrganizationRoles(t *testing.T) {
 	require.NoError(t, err)
 	// Role template_creator is assigned to: e902b0fa-58d1-4979-9102-16047cb56173
 	t.Logf("Role %s is assigned to: %s", roleName, strings.Join(assigned, ", "))
+
+	// What custom roles exist for the org?
+	roles, err := db.OrganizationCustomRoles(ctx, def.ID)
+	require.NoError(t, err)
+	for rolename, perms := range roles {
+		// Custom roles for org 9d2a0964-22fe-4faa-9d1a-161e18685ebf: template_creator, template_creator, template_creator
+		t.Logf("Role %s has permissions: %s", rolename, strings.Join(perms, ", "))
+	}
 }
