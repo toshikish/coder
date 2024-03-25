@@ -139,6 +139,47 @@ func (r *RootCmd) AGPL() []*serpent.Command {
 	return all
 }
 
+var (
+	isTracing      bool
+	isCPUProfiling bool
+)
+
+func init() {
+	// This instrumentation is started in init so that we can capture the effect
+	// of other init functions.
+
+	goTraceFilePath, ok := os.LookupEnv("CODER_GO_TRACE")
+	if ok {
+		traceFile, err := os.OpenFile(goTraceFilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+		if err != nil {
+			panic(fmt.Sprintf("failed to open trace file: %v", err))
+		}
+
+		_, _ = fmt.Fprintf(os.Stderr, "Tracing to %s\n", goTraceFilePath)
+
+		if err := trace.Start(traceFile); err != nil {
+			panic(fmt.Sprintf("failed to start trace: %v", err))
+		}
+		isTracing = true
+	}
+
+	goCPUProfilePath, ok := os.LookupEnv("CODER_GO_CPU_PROFILE")
+	if ok {
+		cpuProfileFile, err := os.OpenFile(goCPUProfilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create CPU profile file: %v", err))
+		}
+
+		_, _ = fmt.Fprintf(os.Stderr, "CPU profiling to %s\n", goCPUProfilePath)
+
+		if err := pprof.StartCPUProfile(cpuProfileFile); err != nil {
+			panic(fmt.Sprintf("failed to start CPU profile: %v", err))
+		}
+		runtime.SetCPUProfileRate(1000)
+		isCPUProfiling = true
+	}
+}
+
 // Main is the entrypoint for the Coder CLI.
 func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 	exitCode := 1
@@ -148,39 +189,15 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 		os.Exit(exitCode)
 	}()
 
-	// This configuration is not available as a standard option because we
-	// want to trace the entire program, including Options parsing.
-	goTraceFilePath, ok := os.LookupEnv("CODER_GO_TRACE")
-	if ok {
-		traceFile, err := os.OpenFile(goTraceFilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
-		if err != nil {
-			panic(fmt.Sprintf("failed to open trace file: %v", err))
-		}
-		defer traceFile.Close()
-
-		_, _ = fmt.Fprintf(os.Stderr, "Tracing to %s\n", goTraceFilePath)
-
-		if err := trace.Start(traceFile); err != nil {
-			panic(fmt.Sprintf("failed to start trace: %v", err))
-		}
+	if isTracing {
 		defer trace.Stop()
 	}
 
-	goCPUProfilePath, ok := os.LookupEnv("CODER_GO_CPU_PROFILE")
-	if ok {
-		cpuProfileFile, err := os.OpenFile(goCPUProfilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
-		if err != nil {
-			panic(fmt.Sprintf("failed to create CPU profile file: %v", err))
-		}
-		defer cpuProfileFile.Close()
-
-		_, _ = fmt.Fprintf(os.Stderr, "CPU profiling to %s\n", goCPUProfilePath)
-
-		if err := pprof.StartCPUProfile(cpuProfileFile); err != nil {
-			panic(fmt.Sprintf("failed to start CPU profile: %v", err))
-		}
+	if isCPUProfiling {
 		defer pprof.StopCPUProfile()
 	}
+
+	ctx := context.Background()
 
 	rand.Seed(time.Now().UnixMicro())
 
@@ -188,7 +205,7 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 	if err != nil {
 		panic(err)
 	}
-	err = cmd.Invoke().WithOS().Run()
+	err = cmd.Invoke().WithOS().WithContext(ctx).Run()
 	if err != nil {
 		var exitErr *exitError
 		if errors.As(err, &exitErr) {
@@ -882,6 +899,7 @@ type example struct {
 // formatExamples formats the examples as width wrapped bulletpoint
 // descriptions with the command underneath.
 func formatExamples(examples ...example) string {
+	defer trace.StartRegion(context.Background(), "formatExamples").End()
 	var sb strings.Builder
 
 	padStyle := cliui.DefaultStyles.Wrap.With(pretty.XPad(4, 0))
