@@ -20,6 +20,7 @@ import (
 	"github.com/coder/coder/v2/coderd/database"
 	"github.com/coder/coder/v2/coderd/database/spice/debug"
 	"github.com/coder/coder/v2/coderd/database/spice/policy"
+	playground "github.com/coder/coder/v2/coderd/database/spice/policy/playground/relationships"
 )
 
 const (
@@ -169,8 +170,9 @@ func (s *SpiceDB) WithRelations(ctx context.Context, relations []v1.Relationship
 // were written.
 func (s *SpiceDB) WriteRelationships(ctx context.Context, relationships ...v1.Relationship) (revert func(), _ error) {
 	opts := []grpc.CallOption{}
-	if s.debug {
-		debugCtx, opt, callback := debugSpiceDBRPC(ctx, s.logger)
+	if s.debugging(ctx) {
+		wlogger := s.logger.With(slog.F("write_relationships", playground.RelationshipsToStrings(relationships)))
+		debugCtx, opt, callback := debugSpiceDBRPC(ctx, wlogger)
 		opts = append(opts, opt)
 		defer callback()
 		ctx = debugCtx
@@ -253,7 +255,7 @@ func (s *SpiceDB) Check(ctx context.Context, permission string, resource *v1.Obj
 	}
 
 	opts := []grpc.CallOption{}
-	if s.debug {
+	if s.debugging(ctx) {
 		debugCtx, opt, callback := debugSpiceDBRPC(ctx, s.logger)
 		opts = append(opts, opt)
 		defer callback()

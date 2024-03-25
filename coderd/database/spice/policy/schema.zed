@@ -38,6 +38,10 @@ definition platform {
 	permission create_organization = super_admin
 }
 
+// org_role is scoped to an organization to allow each org to create their own
+// custom style roles.
+// TODO: Spicedb does not enforce only 1 relation to 1 organization. So a role an be
+// related to multiple orgs, which should not be allowed.
 definition org_role {
 	relation organization: organization
 	relation member: user | group#membership
@@ -63,11 +67,10 @@ definition organization {
 	// unique permissions for edge cases (eg an auditor role)
 	relation default_permissions: group#membership | user
 
-
 	/*******************
 	 * User Roles      *
 	 *******************/
-	relation user_creator:  group#membership | user | org_role#has_role
+	relation member_creator:  group#membership | user | org_role#has_role
 
 	/*******************
 	 * Workspace Roles *
@@ -106,10 +109,10 @@ definition organization {
 	 *******************/
 	// All the ways you can be a member of an organization.
 	permission membership = member + default_permissions +
-		user_creator +
+		member_creator +
 		workspace_viewer + workspace_creator + workspace_deletor + workspace_editor +
 		template_viewer + template_creator + template_deletor + template_editor + template_permission_manager + template_insights_viewer
-	permission create_org_member = platform -> create_user + user_creator
+	permission create_org_member = platform -> create_user + member_creator
 
 
 	/*************************

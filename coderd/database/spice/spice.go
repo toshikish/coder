@@ -133,3 +133,20 @@ func New(ctx context.Context, opts *SpiceServerOpts) (*SpiceDB, error) {
 	}
 	return sdb, nil
 }
+
+type debugCtxKey struct{}
+
+func (s *SpiceDB) debugging(ctx context.Context) bool {
+	if s.debug {
+		// It is on globally
+		return true
+	}
+	if v, ok := ctx.Value(debugCtxKey{}).(bool); ok {
+		return v
+	}
+	return false
+}
+
+func WithDebugging(ctx context.Context) context.Context {
+	return context.WithValue(ctx, debugCtxKey{}, true)
+}

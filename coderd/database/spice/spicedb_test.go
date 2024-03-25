@@ -242,28 +242,43 @@ func TestCustomOrganizationRoles(t *testing.T) {
 	err = db.Check(policy.New().Organization(def.ID).CanCreate_template(userCtx))
 	require.Error(t, err)
 
-	builder := policy.New()
-	org := builder.Organization(def.ID)
-	const roleName = policy.String("template_creator")
-	// Create a custom role that allows creating templates. Org_roles are scoped
-	// to an organization. So they only work within the default org in this case.
-	templateCreatorRole := builder.Org_role(roleName).Organization(org)
-
-	// Assign the role to the organization with its permissions.
-	org.
-		Template_creatorOrg_role(templateCreatorRole).        // Create
-		Template_editorOrg_role(templateCreatorRole).         // Edit
-		Template_insights_viewerOrg_role(templateCreatorRole) // See insights
-	_, err = db.WriteRelationships(ctx, builder.Relationships...)
+	// Create the new custom role
+	const roleName = "template_creator"
+	err = db.UpsertCustomOrganizationRole(spice.WithDebugging(ctx), roleName, def.ID, func(role *policy.ObjOrg_role, organization *policy.ObjOrganization) {
+		organization.
+			Template_creatorOrg_role(role).        // Create
+			Template_editorOrg_role(role).         // Edit
+			Template_insights_viewerOrg_role(role) // See insights
+	})
 	require.NoError(t, err)
 
 	// Now the custom role exists, let's assign it to the user and try it out.
-	builder = policy.New()
-	builder.Org_role(roleName).MemberUser(builder.User(user.ID))
+	// TODO: Probably a helper function for this on the spicedb or something.
+	// 	Doing this manually requires knowing the rolename and relations.
+	builder := policy.New()
+	builder.Org_role(policy.String(roleName)).MemberUser(builder.User(user.ID))
 	_, err = db.WriteRelationships(ctx, builder.Relationships...)
+	require.NoError(t, err)
 
 	// The user is a member of the org and has the role, so they should be able to
 	// create a template
 	err = db.Check(policy.New().Organization(def.ID).CanCreate_template(userCtx))
+	require.NoError(t, err)
+
+	// An example of updating the role to also grant create_user permissions.
+	err = db.Check(policy.New().Organization(def.ID).CanCreate_org_member(userCtx))
+	require.Error(t, err) // The custom role does not grant this yet
+
+	err = db.UpsertCustomOrganizationRole(spice.WithDebugging(ctx), roleName, def.ID, func(role *policy.ObjOrg_role, organization *policy.ObjOrganization) {
+		organization.
+			Template_creatorOrg_role(role).         // Create
+			Template_editorOrg_role(role).          // Edit
+			Template_insights_viewerOrg_role(role). // See insights
+			Member_creatorOrg_role(role)            // Create org members
+	})
+	require.NoError(t, err)
+
+	// Now it will work!
+	err = db.Check(policy.New().Organization(def.ID).CanCreate_org_member(userCtx))
 	require.NoError(t, err)
 }
