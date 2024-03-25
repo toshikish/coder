@@ -18,6 +18,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"runtime/pprof"
 	"runtime/trace"
 	"strings"
 	"syscall"
@@ -140,6 +141,13 @@ func (r *RootCmd) AGPL() []*serpent.Command {
 
 // Main is the entrypoint for the Coder CLI.
 func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
+	exitCode := 1
+	// wrap exit in a defer so that other defers run first.
+	defer func() {
+		//nolint:revive
+		os.Exit(exitCode)
+	}()
+
 	// This configuration is not available as a standard option because we
 	// want to trace the entire program, including Options parsing.
 	goTraceFilePath, ok := os.LookupEnv("CODER_GO_TRACE")
@@ -156,6 +164,20 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 		defer trace.Stop()
 	}
 
+	goCPUProfilePath, ok := os.LookupEnv("CODER_GO_CPU_PROFILE")
+	if ok {
+		cpuProfileFile, err := os.OpenFile(goCPUProfilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create CPU profile file: %v", err))
+		}
+		defer cpuProfileFile.Close()
+
+		if err := pprof.StartCPUProfile(cpuProfileFile); err != nil {
+			panic(fmt.Sprintf("failed to start CPU profile: %v", err))
+		}
+		defer pprof.StopCPUProfile()
+	}
+
 	rand.Seed(time.Now().UnixMicro())
 
 	cmd, err := r.Command(subcommands)
@@ -164,23 +186,21 @@ func (r *RootCmd) RunMain(subcommands []*serpent.Command) {
 	}
 	err = cmd.Invoke().WithOS().Run()
 	if err != nil {
-		code := 1
 		var exitErr *exitError
 		if errors.As(err, &exitErr) {
-			code = exitErr.code
+			exitCode = exitErr.code
 			err = exitErr.err
 		}
 		if errors.Is(err, cliui.Canceled) {
 			//nolint:revive
-			os.Exit(code)
+			exitCode = 1
 		}
 		f := prettyErrorFormatter{w: os.Stderr, verbose: r.verbose}
 		if err != nil {
 			f.format(err)
 		}
-		//nolint:revive
-		os.Exit(code)
 	}
+	exitCode = 0
 }
 
 func (r *RootCmd) Command(subcommands []*serpent.Command) (*serpent.Command, error) {
