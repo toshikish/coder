@@ -18,6 +18,7 @@ import (
 	"github.com/coder/coder/v2/coderd/database/dbtestutil"
 	"github.com/coder/coder/v2/coderd/database/dbtime"
 	"github.com/coder/coder/v2/coderd/database/spice"
+	"github.com/coder/coder/v2/coderd/database/spice/policy"
 	"github.com/coder/coder/v2/coderd/rbac"
 	"github.com/coder/coder/v2/testutil"
 )
@@ -199,4 +200,70 @@ func TestExampleList(t *testing.T) {
 	workspaces, err = db.GetWorkspaces(ownerCtx, database.GetWorkspacesParams{})
 	require.NoError(t, err)
 	require.Len(t, workspaces, len(users))
+}
+
+func TestCustomOrganizationRoles(t *testing.T) {
+	t.Parallel()
+
+	logger := slogtest.Make(t, &slogtest.Options{
+		IgnoreErrors:   false,
+		SkipCleanup:    false,
+		IgnoredErrorIs: nil,
+	}).Leveled(slog.LevelDebug)
+
+	ctx := testutil.Context(t, testutil.WaitLong)
+
+	db, err := spice.New(ctx, &spice.SpiceServerOpts{
+		PostgresURI: "",
+		Logger:      logger,
+		Store:       dbmem.New(),
+		Debug:       false,
+	})
+	require.NoError(t, err)
+	err = db.Run(ctx)
+	require.NoError(t, err)
+
+	god := spice.AsGod(ctx)
+	def, err := db.GetDefaultOrganization(god)
+	require.NoError(t, err)
+
+	// Create a normal user in the organization.
+	user := dbgen.User(t, db, database.User{
+		RBACRoles: []string{},
+	})
+	dbgen.OrganizationMember(t, db, database.OrganizationMember{
+		UserID:         user.ID,
+		OrganizationID: def.ID,
+	})
+
+	userCtx := spice.AsUser(ctx, user.ID)
+
+	// By default, users cannot create templates.
+	err = db.Check(policy.New().Organization(def.ID).CanCreate_template(userCtx))
+	require.Error(t, err)
+
+	builder := policy.New()
+	org := builder.Organization(def.ID)
+	const roleName = policy.String("template_creator")
+	// Create a custom role that allows creating templates. Org_roles are scoped
+	// to an organization. So they only work within the default org in this case.
+	templateCreatorRole := builder.Org_role(roleName).Organization(org)
+
+	// Assign the role to the organization with its permissions.
+	org.
+		Template_creatorOrg_role(templateCreatorRole).        // Create
+		Template_editorOrg_role(templateCreatorRole).         // Edit
+		Template_insights_viewerOrg_role(templateCreatorRole) // See insights
+	_, err = db.WriteRelationships(ctx, builder.Relationships...)
+	require.NoError(t, err)
+
+	// Now the custom role exists, let's assign it to the user and try it out.
+	builder = policy.New()
+	builder.Org_role(roleName).MemberUser(builder.User(user.ID))
+	_, err = db.WriteRelationships(ctx, builder.Relationships...)
+
+	// The user is a member of the org and has the role, so they should be able to
+	// create a template
+	err = db.Check(policy.New().Organization(def.ID).CanCreate_template(userCtx))
+	require.NoError(t, err)
 }

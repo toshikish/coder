@@ -7,6 +7,8 @@
 definition user {
 }
 
+
+
 // group is a collection of users and operates exactly like a user from
 // a permissions pov.
 definition group {
@@ -36,6 +38,15 @@ definition platform {
 	permission create_organization = super_admin
 }
 
+definition org_role {
+	relation organization: organization
+	relation member: user | group#membership
+
+	// has_role requires the user/group has the custom org_role and the user is a member
+	// of the org. This way if they are kicked from the org, they lose access.
+	permission has_role = (member & organization->membership)
+}
+
 // TODO: Organization member
 definition organization {
 	// platform relation is the site level (site owner). All super-admin type permissions
@@ -54,19 +65,24 @@ definition organization {
 
 
 	/*******************
+	 * User Roles      *
+	 *******************/
+	relation user_creator:  group#membership | user | org_role#has_role
+
+	/*******************
 	 * Workspace Roles *
 	 *******************/
 	// workspace_viewers can always view all workspace properties for all
 	// workspaces owned by an organization.
-	relation workspace_viewer: group#membership | user
+	relation workspace_viewer: group#membership | user | org_role#has_role
 	// workspace_creator enables the granted to create workspace resources for
 	// the given organization.
-	relation workspace_creator: group#membership | user
+	relation workspace_creator: group#membership | user | org_role#has_role
 	// workspace_deletor allows the delete permission to all organization workspaces.
-	relation workspace_deletor: group#membership | user
+	relation workspace_deletor: group#membership | user | org_role#has_role
 	// workspace_editor allows editing a workspace's settings, build parameters, schedule,
 	// etc.
-	relation workspace_editor: group#membership | user
+	relation workspace_editor: group#membership | user | org_role#has_role
 	// Other ideas:
 	// - workspace_version_selector :: Template admins to update workspaces
 	// - dangerous_workspace_connector :: SSH access to all workspaces
@@ -74,12 +90,12 @@ definition organization {
 	/*******************
 	 * Template Roles *
 	 *******************/
-	relation template_viewer: group#membership | user
-	relation template_creator: group#membership | user
-	relation template_deletor: group#membership | user
-	relation template_editor: group#membership | user
-	relation template_permission_manager: group#membership | user
-	relation template_insights_viewer: group#membership | user
+	relation template_viewer: group#membership | user | org_role#has_role
+	relation template_creator: group#membership | user | org_role#has_role
+	relation template_deletor: group#membership | user | org_role#has_role
+	relation template_editor: group#membership | user | org_role#has_role
+	relation template_permission_manager: group#membership | user | org_role#has_role
+	relation template_insights_viewer: group#membership | user | org_role#has_role
 
 	/***************
 	 * Other Roles *
@@ -90,9 +106,10 @@ definition organization {
 	 *******************/
 	// All the ways you can be a member of an organization.
 	permission membership = member + default_permissions +
+		user_creator +
 		workspace_viewer + workspace_creator + workspace_deletor + workspace_editor +
 		template_viewer + template_creator + template_deletor + template_editor + template_permission_manager + template_insights_viewer
-	permission create_org_member = platform -> create_user
+	permission create_org_member = platform -> create_user + user_creator
 
 
 	/*************************
@@ -232,4 +249,3 @@ definition job {
 
 	permission view = template_version->view + workspace_build->view
 }
-
