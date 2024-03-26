@@ -8,13 +8,26 @@ import (
 
 	v1 "github.com/authzed/authzed-go/proto/authzed/api/v1"
 	"github.com/google/uuid"
-	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 
 	"github.com/coder/coder/v2/coderd/database/spice/policy"
 )
 
 // TODO: This code could use some love. Dedup (DRY) a lot of this.
+
+func receiveAll[R any](rec func() (R, error), each func(r R)) error {
+	for {
+		r, err := rec()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		each(r)
+	}
+	return nil
+}
 
 // OrganizationCustomRoles returns all custom roles for a given organization.
 // Returns a map of [rolename] -> [permissions].
@@ -48,22 +61,15 @@ func (s *SpiceDB) OrganizationCustomRoles(ctx context.Context, orgID uuid.UUID) 
 	}
 
 	roles := map[string][]string{}
-	for true {
-		rel, err := resp.Recv()
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil {
-			return nil, xerrors.Errorf("failed to find assigned: %w", err)
-		}
-
+	err = receiveAll(resp.Recv, func(rel *v1.ReadRelationshipsResponse) {
 		roleName := rel.Relationship.Subject.Object.ObjectId
 		rolePerm := rel.Relationship.Relation
 		if _, ok := roles[roleName]; !ok {
 			roles[roleName] = []string{}
 		}
 		roles[roleName] = append(roles[roleName], rolePerm)
-	}
+	})
+
 	return roles, nil
 }
 
@@ -98,18 +104,10 @@ func (s *SpiceDB) OrganizationRoleAssignedActors(ctx context.Context, roleName s
 	}
 
 	assigned := make([]string, 0)
-	for true {
-		rel, err := resp.Recv()
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil {
-			return nil, xerrors.Errorf("failed to find assigned: %w", err)
-		}
-		// rel.Relationship.Subject.Object.ObjectType is either Group or User.
-		// We might want to return that info as well? Will be helpful for the caller.
+	err = receiveAll(resp.Recv, func(rel *v1.ReadRelationshipsResponse) {
 		assigned = append(assigned, rel.Relationship.Subject.Object.ObjectId)
-	}
+	})
+
 	return assigned, nil
 }
 
@@ -135,16 +133,9 @@ func (s *SpiceDB) OrganizationRolePermissions(ctx context.Context, roleName stri
 	}
 
 	perms := make([]string, 0)
-	for true {
-		rel, err := resp.Recv()
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil {
-			return nil, xerrors.Errorf("failed to read relationship: %w", err)
-		}
+	err = receiveAll(resp.Recv, func(rel *v1.ReadRelationshipsResponse) {
 		perms = append(perms, rel.Relationship.Relation)
-	}
+	})
 	return perms, nil
 }
 
