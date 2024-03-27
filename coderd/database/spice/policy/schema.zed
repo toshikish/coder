@@ -7,8 +7,6 @@
 definition user {
 }
 
-
-
 // group is a collection of users and operates exactly like a user from
 // a permissions pov.
 definition group {
@@ -145,6 +143,13 @@ definition organization {
 
 // Resources
 
+// workspace_agent_key represents a workspace agent. Agents
+// have restricted access to a singular workspace.
+// TODO: Look into caveats to maybe reject based on workspace state?
+definition workspace_agent_key {
+
+}
+
 // workspace's are owned and controlled by an organization. Users must be granted permission to interact
 // with the team operated workspace. Most workspaces will only have 1 user with granted permissions.
 // This mean from the policy's perspective, a user does not own their own workspaces.
@@ -152,7 +157,7 @@ definition workspace {
 	// owning organization for pulling permissions through.
 	relation organization: organization
 	// Individually granted permissions
-	relation viewer: group#membership | user
+	relation viewer: group#membership | user | workspace_agent_key
 	relation editor: group#membership | user
 	relation deletor: group#membership | user
 	relation selector: group#membership | user

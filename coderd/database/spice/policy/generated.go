@@ -102,7 +102,7 @@ func (obj *ObjFile) RelationTemplate_version() string {
 	return "template_version"
 }
 
-// Template_version schema.zed:240
+// Template_version schema.zed:245
 // Relationship: file:<id>#template_version@template_version:<id>
 func (obj *ObjFile) Template_version(subs ...*ObjTemplate_version) *ObjFile {
 	for i := range subs {
@@ -120,7 +120,7 @@ func (obj *ObjFile) Template_version(subs ...*ObjTemplate_version) *ObjFile {
 	return obj
 }
 
-// CanView schema.zed:242
+// CanView schema.zed:247
 // Object: file:<id>
 // Schema: permission view = template_version->view
 func (obj *ObjFile) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
@@ -159,7 +159,7 @@ func (obj *ObjGroup) RelationMember() string {
 	return "member"
 }
 
-// MemberUser schema.zed:19
+// MemberUser schema.zed:17
 // Relationship: group:<id>#member@user:<id>
 func (obj *ObjGroup) MemberUser(subs ...*ObjUser) *ObjGroup {
 	for i := range subs {
@@ -177,7 +177,7 @@ func (obj *ObjGroup) MemberUser(subs ...*ObjUser) *ObjGroup {
 	return obj
 }
 
-// MemberGroup schema.zed:19
+// MemberGroup schema.zed:17
 // Relationship: group:<id>#member@group:<id>#member
 func (obj *ObjGroup) MemberGroup(subs ...*ObjGroup) *ObjGroup {
 	for i := range subs {
@@ -195,7 +195,7 @@ func (obj *ObjGroup) MemberGroup(subs ...*ObjGroup) *ObjGroup {
 	return obj
 }
 
-// MemberWildcard schema.zed:19
+// MemberWildcard schema.zed:17
 // Relationship: group:<id>#member@user:*
 func (obj *ObjGroup) MemberWildcard() *ObjGroup {
 	obj.Builder.AddRelationship(v1.Relationship{
@@ -213,13 +213,21 @@ func (obj *ObjGroup) MemberWildcard() *ObjGroup {
 	return obj
 }
 
-// CanMembership schema.zed:23
+// CanMembership schema.zed:21
 // Object: group:<id>
 func (obj *ObjGroup) CanMembership(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "membership", obj.Object()
 }
 
 // AsAnyMembership
+// org_role:<id>#member
+// platform:<id>#user_admin
+// workspace:<id>#viewer
+// workspace:<id>#editor
+// workspace:<id>#deletor
+// workspace:<id>#selector
+// workspace:<id>#connector
+// workspace:<id>#for_user
 // organization:<id>#member
 // organization:<id>#default_permissions
 // organization:<id>#member_creator
@@ -233,14 +241,6 @@ func (obj *ObjGroup) CanMembership(ctx context.Context) (context.Context, string
 // organization:<id>#template_editor
 // organization:<id>#template_permission_manager
 // organization:<id>#template_insights_viewer
-// platform:<id>#user_admin
-// workspace:<id>#viewer
-// workspace:<id>#editor
-// workspace:<id>#deletor
-// workspace:<id>#selector
-// workspace:<id>#connector
-// workspace:<id>#for_user
-// org_role:<id>#member
 func (obj *ObjGroup) AsAnyMembership() *ObjGroup {
 	return &ObjGroup{
 		Obj:              obj.Object(),
@@ -295,7 +295,7 @@ func (obj *ObjJob) RelationWorkspace_build() string {
 	return "workspace_build"
 }
 
-// Template_version schema.zed:249
+// Template_version schema.zed:254
 // Relationship: job:<id>#template_version@template_version:<id>
 func (obj *ObjJob) Template_version(subs ...*ObjTemplate_version) *ObjJob {
 	for i := range subs {
@@ -313,7 +313,7 @@ func (obj *ObjJob) Template_version(subs ...*ObjTemplate_version) *ObjJob {
 	return obj
 }
 
-// Workspace_build schema.zed:250
+// Workspace_build schema.zed:255
 // Relationship: job:<id>#workspace_build@workspace_build:<id>
 func (obj *ObjJob) Workspace_build(subs ...*ObjWorkspace_build) *ObjJob {
 	for i := range subs {
@@ -331,7 +331,7 @@ func (obj *ObjJob) Workspace_build(subs ...*ObjWorkspace_build) *ObjJob {
 	return obj
 }
 
-// CanView schema.zed:253
+// CanView schema.zed:258
 // Object: job:<id>
 func (obj *ObjJob) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view", obj.Object()
@@ -373,7 +373,7 @@ func (obj *ObjOrg_role) RelationOrganization() string {
 	return "organization"
 }
 
-// Organization schema.zed:46
+// Organization schema.zed:44
 // Relationship: org_role:<id>#organization@organization:<id>
 func (obj *ObjOrg_role) Organization(subs ...*ObjOrganization) *ObjOrg_role {
 	for i := range subs {
@@ -391,7 +391,7 @@ func (obj *ObjOrg_role) Organization(subs ...*ObjOrganization) *ObjOrg_role {
 	return obj
 }
 
-// MemberUser schema.zed:47
+// MemberUser schema.zed:45
 // Relationship: org_role:<id>#member@user:<id>
 func (obj *ObjOrg_role) MemberUser(subs ...*ObjUser) *ObjOrg_role {
 	for i := range subs {
@@ -409,7 +409,7 @@ func (obj *ObjOrg_role) MemberUser(subs ...*ObjUser) *ObjOrg_role {
 	return obj
 }
 
-// MemberGroup schema.zed:47
+// MemberGroup schema.zed:45
 // Relationship: org_role:<id>#member@group:<id>#membership
 func (obj *ObjOrg_role) MemberGroup(subs ...*ObjGroup) *ObjOrg_role {
 	for i := range subs {
@@ -427,7 +427,7 @@ func (obj *ObjOrg_role) MemberGroup(subs ...*ObjGroup) *ObjOrg_role {
 	return obj
 }
 
-// CanHas_role schema.zed:51
+// CanHas_role schema.zed:49
 // Object: org_role:<id>
 func (obj *ObjOrg_role) CanHas_role(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "has_role", obj.Object()
@@ -537,7 +537,7 @@ func (obj *ObjOrganization) RelationWorkspace_viewer() string {
 	return "workspace_viewer"
 }
 
-// Platform schema.zed:58
+// Platform schema.zed:56
 // Relationship: organization:<id>#platform@platform:<id>
 func (obj *ObjOrganization) Platform(subs ...*ObjPlatform) *ObjOrganization {
 	for i := range subs {
@@ -555,7 +555,7 @@ func (obj *ObjOrganization) Platform(subs ...*ObjPlatform) *ObjOrganization {
 	return obj
 }
 
-// MemberGroup schema.zed:64
+// MemberGroup schema.zed:62
 // Relationship: organization:<id>#member@group:<id>#membership
 func (obj *ObjOrganization) MemberGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -573,7 +573,7 @@ func (obj *ObjOrganization) MemberGroup(subs ...*ObjGroup) *ObjOrganization {
 	return obj
 }
 
-// MemberUser schema.zed:64
+// MemberUser schema.zed:62
 // Relationship: organization:<id>#member@user:<id>
 func (obj *ObjOrganization) MemberUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -591,7 +591,7 @@ func (obj *ObjOrganization) MemberUser(subs ...*ObjUser) *ObjOrganization {
 	return obj
 }
 
-// Default_permissionsGroup schema.zed:68
+// Default_permissionsGroup schema.zed:66
 // Relationship: organization:<id>#default_permissions@group:<id>#membership
 func (obj *ObjOrganization) Default_permissionsGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -609,7 +609,7 @@ func (obj *ObjOrganization) Default_permissionsGroup(subs ...*ObjGroup) *ObjOrga
 	return obj
 }
 
-// Default_permissionsUser schema.zed:68
+// Default_permissionsUser schema.zed:66
 // Relationship: organization:<id>#default_permissions@user:<id>
 func (obj *ObjOrganization) Default_permissionsUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -627,7 +627,7 @@ func (obj *ObjOrganization) Default_permissionsUser(subs ...*ObjUser) *ObjOrgani
 	return obj
 }
 
-// Member_creatorGroup schema.zed:73
+// Member_creatorGroup schema.zed:71
 // Relationship: organization:<id>#member_creator@group:<id>#membership
 func (obj *ObjOrganization) Member_creatorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -645,7 +645,7 @@ func (obj *ObjOrganization) Member_creatorGroup(subs ...*ObjGroup) *ObjOrganizat
 	return obj
 }
 
-// Member_creatorUser schema.zed:73
+// Member_creatorUser schema.zed:71
 // Relationship: organization:<id>#member_creator@user:<id>
 func (obj *ObjOrganization) Member_creatorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -663,7 +663,7 @@ func (obj *ObjOrganization) Member_creatorUser(subs ...*ObjUser) *ObjOrganizatio
 	return obj
 }
 
-// Member_creatorOrg_role schema.zed:73
+// Member_creatorOrg_role schema.zed:71
 // Relationship: organization:<id>#member_creator@org_role:<id>#has_role
 func (obj *ObjOrganization) Member_creatorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -681,7 +681,7 @@ func (obj *ObjOrganization) Member_creatorOrg_role(subs ...*ObjOrg_role) *ObjOrg
 	return obj
 }
 
-// Workspace_viewerGroup schema.zed:80
+// Workspace_viewerGroup schema.zed:78
 // Relationship: organization:<id>#workspace_viewer@group:<id>#membership
 func (obj *ObjOrganization) Workspace_viewerGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -699,7 +699,7 @@ func (obj *ObjOrganization) Workspace_viewerGroup(subs ...*ObjGroup) *ObjOrganiz
 	return obj
 }
 
-// Workspace_viewerUser schema.zed:80
+// Workspace_viewerUser schema.zed:78
 // Relationship: organization:<id>#workspace_viewer@user:<id>
 func (obj *ObjOrganization) Workspace_viewerUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -717,7 +717,7 @@ func (obj *ObjOrganization) Workspace_viewerUser(subs ...*ObjUser) *ObjOrganizat
 	return obj
 }
 
-// Workspace_viewerOrg_role schema.zed:80
+// Workspace_viewerOrg_role schema.zed:78
 // Relationship: organization:<id>#workspace_viewer@org_role:<id>#has_role
 func (obj *ObjOrganization) Workspace_viewerOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -735,7 +735,7 @@ func (obj *ObjOrganization) Workspace_viewerOrg_role(subs ...*ObjOrg_role) *ObjO
 	return obj
 }
 
-// Workspace_creatorGroup schema.zed:83
+// Workspace_creatorGroup schema.zed:81
 // Relationship: organization:<id>#workspace_creator@group:<id>#membership
 func (obj *ObjOrganization) Workspace_creatorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -753,7 +753,7 @@ func (obj *ObjOrganization) Workspace_creatorGroup(subs ...*ObjGroup) *ObjOrgani
 	return obj
 }
 
-// Workspace_creatorUser schema.zed:83
+// Workspace_creatorUser schema.zed:81
 // Relationship: organization:<id>#workspace_creator@user:<id>
 func (obj *ObjOrganization) Workspace_creatorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -771,7 +771,7 @@ func (obj *ObjOrganization) Workspace_creatorUser(subs ...*ObjUser) *ObjOrganiza
 	return obj
 }
 
-// Workspace_creatorOrg_role schema.zed:83
+// Workspace_creatorOrg_role schema.zed:81
 // Relationship: organization:<id>#workspace_creator@org_role:<id>#has_role
 func (obj *ObjOrganization) Workspace_creatorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -789,7 +789,7 @@ func (obj *ObjOrganization) Workspace_creatorOrg_role(subs ...*ObjOrg_role) *Obj
 	return obj
 }
 
-// Workspace_deletorGroup schema.zed:85
+// Workspace_deletorGroup schema.zed:83
 // Relationship: organization:<id>#workspace_deletor@group:<id>#membership
 func (obj *ObjOrganization) Workspace_deletorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -807,7 +807,7 @@ func (obj *ObjOrganization) Workspace_deletorGroup(subs ...*ObjGroup) *ObjOrgani
 	return obj
 }
 
-// Workspace_deletorUser schema.zed:85
+// Workspace_deletorUser schema.zed:83
 // Relationship: organization:<id>#workspace_deletor@user:<id>
 func (obj *ObjOrganization) Workspace_deletorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -825,7 +825,7 @@ func (obj *ObjOrganization) Workspace_deletorUser(subs ...*ObjUser) *ObjOrganiza
 	return obj
 }
 
-// Workspace_deletorOrg_role schema.zed:85
+// Workspace_deletorOrg_role schema.zed:83
 // Relationship: organization:<id>#workspace_deletor@org_role:<id>#has_role
 func (obj *ObjOrganization) Workspace_deletorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -843,7 +843,7 @@ func (obj *ObjOrganization) Workspace_deletorOrg_role(subs ...*ObjOrg_role) *Obj
 	return obj
 }
 
-// Workspace_editorGroup schema.zed:88
+// Workspace_editorGroup schema.zed:86
 // Relationship: organization:<id>#workspace_editor@group:<id>#membership
 func (obj *ObjOrganization) Workspace_editorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -861,7 +861,7 @@ func (obj *ObjOrganization) Workspace_editorGroup(subs ...*ObjGroup) *ObjOrganiz
 	return obj
 }
 
-// Workspace_editorUser schema.zed:88
+// Workspace_editorUser schema.zed:86
 // Relationship: organization:<id>#workspace_editor@user:<id>
 func (obj *ObjOrganization) Workspace_editorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -879,7 +879,7 @@ func (obj *ObjOrganization) Workspace_editorUser(subs ...*ObjUser) *ObjOrganizat
 	return obj
 }
 
-// Workspace_editorOrg_role schema.zed:88
+// Workspace_editorOrg_role schema.zed:86
 // Relationship: organization:<id>#workspace_editor@org_role:<id>#has_role
 func (obj *ObjOrganization) Workspace_editorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -897,7 +897,7 @@ func (obj *ObjOrganization) Workspace_editorOrg_role(subs ...*ObjOrg_role) *ObjO
 	return obj
 }
 
-// Template_viewerGroup schema.zed:96
+// Template_viewerGroup schema.zed:94
 // Relationship: organization:<id>#template_viewer@group:<id>#membership
 func (obj *ObjOrganization) Template_viewerGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -915,7 +915,7 @@ func (obj *ObjOrganization) Template_viewerGroup(subs ...*ObjGroup) *ObjOrganiza
 	return obj
 }
 
-// Template_viewerUser schema.zed:96
+// Template_viewerUser schema.zed:94
 // Relationship: organization:<id>#template_viewer@user:<id>
 func (obj *ObjOrganization) Template_viewerUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -933,7 +933,7 @@ func (obj *ObjOrganization) Template_viewerUser(subs ...*ObjUser) *ObjOrganizati
 	return obj
 }
 
-// Template_viewerOrg_role schema.zed:96
+// Template_viewerOrg_role schema.zed:94
 // Relationship: organization:<id>#template_viewer@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_viewerOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -951,7 +951,7 @@ func (obj *ObjOrganization) Template_viewerOrg_role(subs ...*ObjOrg_role) *ObjOr
 	return obj
 }
 
-// Template_creatorGroup schema.zed:97
+// Template_creatorGroup schema.zed:95
 // Relationship: organization:<id>#template_creator@group:<id>#membership
 func (obj *ObjOrganization) Template_creatorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -969,7 +969,7 @@ func (obj *ObjOrganization) Template_creatorGroup(subs ...*ObjGroup) *ObjOrganiz
 	return obj
 }
 
-// Template_creatorUser schema.zed:97
+// Template_creatorUser schema.zed:95
 // Relationship: organization:<id>#template_creator@user:<id>
 func (obj *ObjOrganization) Template_creatorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -987,7 +987,7 @@ func (obj *ObjOrganization) Template_creatorUser(subs ...*ObjUser) *ObjOrganizat
 	return obj
 }
 
-// Template_creatorOrg_role schema.zed:97
+// Template_creatorOrg_role schema.zed:95
 // Relationship: organization:<id>#template_creator@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_creatorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -1005,7 +1005,7 @@ func (obj *ObjOrganization) Template_creatorOrg_role(subs ...*ObjOrg_role) *ObjO
 	return obj
 }
 
-// Template_deletorGroup schema.zed:98
+// Template_deletorGroup schema.zed:96
 // Relationship: organization:<id>#template_deletor@group:<id>#membership
 func (obj *ObjOrganization) Template_deletorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -1023,7 +1023,7 @@ func (obj *ObjOrganization) Template_deletorGroup(subs ...*ObjGroup) *ObjOrganiz
 	return obj
 }
 
-// Template_deletorUser schema.zed:98
+// Template_deletorUser schema.zed:96
 // Relationship: organization:<id>#template_deletor@user:<id>
 func (obj *ObjOrganization) Template_deletorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -1041,7 +1041,7 @@ func (obj *ObjOrganization) Template_deletorUser(subs ...*ObjUser) *ObjOrganizat
 	return obj
 }
 
-// Template_deletorOrg_role schema.zed:98
+// Template_deletorOrg_role schema.zed:96
 // Relationship: organization:<id>#template_deletor@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_deletorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -1059,7 +1059,7 @@ func (obj *ObjOrganization) Template_deletorOrg_role(subs ...*ObjOrg_role) *ObjO
 	return obj
 }
 
-// Template_editorGroup schema.zed:99
+// Template_editorGroup schema.zed:97
 // Relationship: organization:<id>#template_editor@group:<id>#membership
 func (obj *ObjOrganization) Template_editorGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -1077,7 +1077,7 @@ func (obj *ObjOrganization) Template_editorGroup(subs ...*ObjGroup) *ObjOrganiza
 	return obj
 }
 
-// Template_editorUser schema.zed:99
+// Template_editorUser schema.zed:97
 // Relationship: organization:<id>#template_editor@user:<id>
 func (obj *ObjOrganization) Template_editorUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -1095,7 +1095,7 @@ func (obj *ObjOrganization) Template_editorUser(subs ...*ObjUser) *ObjOrganizati
 	return obj
 }
 
-// Template_editorOrg_role schema.zed:99
+// Template_editorOrg_role schema.zed:97
 // Relationship: organization:<id>#template_editor@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_editorOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -1113,7 +1113,7 @@ func (obj *ObjOrganization) Template_editorOrg_role(subs ...*ObjOrg_role) *ObjOr
 	return obj
 }
 
-// Template_permission_managerGroup schema.zed:100
+// Template_permission_managerGroup schema.zed:98
 // Relationship: organization:<id>#template_permission_manager@group:<id>#membership
 func (obj *ObjOrganization) Template_permission_managerGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -1131,7 +1131,7 @@ func (obj *ObjOrganization) Template_permission_managerGroup(subs ...*ObjGroup) 
 	return obj
 }
 
-// Template_permission_managerUser schema.zed:100
+// Template_permission_managerUser schema.zed:98
 // Relationship: organization:<id>#template_permission_manager@user:<id>
 func (obj *ObjOrganization) Template_permission_managerUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -1149,7 +1149,7 @@ func (obj *ObjOrganization) Template_permission_managerUser(subs ...*ObjUser) *O
 	return obj
 }
 
-// Template_permission_managerOrg_role schema.zed:100
+// Template_permission_managerOrg_role schema.zed:98
 // Relationship: organization:<id>#template_permission_manager@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_permission_managerOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -1167,7 +1167,7 @@ func (obj *ObjOrganization) Template_permission_managerOrg_role(subs ...*ObjOrg_
 	return obj
 }
 
-// Template_insights_viewerGroup schema.zed:101
+// Template_insights_viewerGroup schema.zed:99
 // Relationship: organization:<id>#template_insights_viewer@group:<id>#membership
 func (obj *ObjOrganization) Template_insights_viewerGroup(subs ...*ObjGroup) *ObjOrganization {
 	for i := range subs {
@@ -1185,7 +1185,7 @@ func (obj *ObjOrganization) Template_insights_viewerGroup(subs ...*ObjGroup) *Ob
 	return obj
 }
 
-// Template_insights_viewerUser schema.zed:101
+// Template_insights_viewerUser schema.zed:99
 // Relationship: organization:<id>#template_insights_viewer@user:<id>
 func (obj *ObjOrganization) Template_insights_viewerUser(subs ...*ObjUser) *ObjOrganization {
 	for i := range subs {
@@ -1203,7 +1203,7 @@ func (obj *ObjOrganization) Template_insights_viewerUser(subs ...*ObjUser) *ObjO
 	return obj
 }
 
-// Template_insights_viewerOrg_role schema.zed:101
+// Template_insights_viewerOrg_role schema.zed:99
 // Relationship: organization:<id>#template_insights_viewer@org_role:<id>#has_role
 func (obj *ObjOrganization) Template_insights_viewerOrg_role(subs ...*ObjOrg_role) *ObjOrganization {
 	for i := range subs {
@@ -1221,100 +1221,100 @@ func (obj *ObjOrganization) Template_insights_viewerOrg_role(subs ...*ObjOrg_rol
 	return obj
 }
 
-// CanMembership schema.zed:111
+// CanMembership schema.zed:109
 // Object: organization:<id>
 func (obj *ObjOrganization) CanMembership(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "membership", obj.Object()
 }
 
-// CanCreate_org_member schema.zed:115
+// CanCreate_org_member schema.zed:113
 // Object: organization:<id>
 // Schema: permission create_org_member = platform->create_user + member_creator
 func (obj *ObjOrganization) CanCreate_org_member(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "create_org_member", obj.Object()
 }
 
-// CanView_workspaces schema.zed:122
+// CanView_workspaces schema.zed:120
 // Object: organization:<id>
 func (obj *ObjOrganization) CanView_workspaces(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view_workspaces", obj.Object()
 }
 
-// CanEdit_workspaces schema.zed:123
+// CanEdit_workspaces schema.zed:121
 // Object: organization:<id>
 // Schema: permission edit_workspaces = platform->super_admin + workspace_editor
 func (obj *ObjOrganization) CanEdit_workspaces(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "edit_workspaces", obj.Object()
 }
 
-// CanSelect_workspace_version schema.zed:124
+// CanSelect_workspace_version schema.zed:122
 // Object: organization:<id>
 // Schema: permission select_workspace_version = platform->super_admin
 func (obj *ObjOrganization) CanSelect_workspace_version(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "select_workspace_version", obj.Object()
 }
 
-// CanDelete_workspaces schema.zed:125
+// CanDelete_workspaces schema.zed:123
 // Object: organization:<id>
 // Schema: permission delete_workspaces = platform->super_admin + workspace_deletor
 func (obj *ObjOrganization) CanDelete_workspaces(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "delete_workspaces", obj.Object()
 }
 
-// CanCreate_workspace schema.zed:128
+// CanCreate_workspace schema.zed:126
 // Object: organization:<id>
 func (obj *ObjOrganization) CanCreate_workspace(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "create_workspace", obj.Object()
 }
 
-// CanView_templates schema.zed:134
+// CanView_templates schema.zed:132
 // Object: organization:<id>
 func (obj *ObjOrganization) CanView_templates(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view_templates", obj.Object()
 }
 
-// CanView_template_insights schema.zed:135
+// CanView_template_insights schema.zed:133
 // Object: organization:<id>
 // Schema: permission view_template_insights = platform->super_admin + template_insights_viewer
 func (obj *ObjOrganization) CanView_template_insights(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view_template_insights", obj.Object()
 }
 
-// CanEdit_templates schema.zed:136
+// CanEdit_templates schema.zed:134
 // Object: organization:<id>
 // Schema: permission edit_templates = platform->super_admin + template_editor
 func (obj *ObjOrganization) CanEdit_templates(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "edit_templates", obj.Object()
 }
 
-// CanDelete_templates schema.zed:137
+// CanDelete_templates schema.zed:135
 // Object: organization:<id>
 // Schema: permission delete_templates = platform->super_admin + template_deletor
 func (obj *ObjOrganization) CanDelete_templates(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "delete_templates", obj.Object()
 }
 
-// CanManage_template_permissions schema.zed:138
+// CanManage_template_permissions schema.zed:136
 // Object: organization:<id>
 // Schema: permission manage_template_permissions = platform->super_admin + template_permission_manager
 func (obj *ObjOrganization) CanManage_template_permissions(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "manage_template_permissions", obj.Object()
 }
 
-// CanCreate_template schema.zed:140
+// CanCreate_template schema.zed:138
 // Object: organization:<id>
 func (obj *ObjOrganization) CanCreate_template(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "create_template", obj.Object()
 }
 
-// CanCreate_template_version schema.zed:141
+// CanCreate_template_version schema.zed:139
 // Object: organization:<id>
 // Schema: permission create_template_version = create_template
 func (obj *ObjOrganization) CanCreate_template_version(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "create_template_version", obj.Object()
 }
 
-// CanCreate_file schema.zed:142
+// CanCreate_file schema.zed:140
 // Object: organization:<id>
 // Schema: permission create_file = create_template
 func (obj *ObjOrganization) CanCreate_file(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
@@ -1357,7 +1357,7 @@ func (obj *ObjPlatform) RelationUser_admin() string {
 	return "user_admin"
 }
 
-// Administrator schema.zed:31
+// Administrator schema.zed:29
 // Relationship: platform:<id>#administrator@user:<id>
 func (obj *ObjPlatform) Administrator(subs ...*ObjUser) *ObjPlatform {
 	for i := range subs {
@@ -1375,7 +1375,7 @@ func (obj *ObjPlatform) Administrator(subs ...*ObjUser) *ObjPlatform {
 	return obj
 }
 
-// User_adminUser schema.zed:32
+// User_adminUser schema.zed:30
 // Relationship: platform:<id>#user_admin@user:<id>
 func (obj *ObjPlatform) User_adminUser(subs ...*ObjUser) *ObjPlatform {
 	for i := range subs {
@@ -1393,7 +1393,7 @@ func (obj *ObjPlatform) User_adminUser(subs ...*ObjUser) *ObjPlatform {
 	return obj
 }
 
-// User_adminGroup schema.zed:32
+// User_adminGroup schema.zed:30
 // Relationship: platform:<id>#user_admin@group:<id>#membership
 func (obj *ObjPlatform) User_adminGroup(subs ...*ObjGroup) *ObjPlatform {
 	for i := range subs {
@@ -1411,20 +1411,20 @@ func (obj *ObjPlatform) User_adminGroup(subs ...*ObjGroup) *ObjPlatform {
 	return obj
 }
 
-// CanSuper_admin schema.zed:36
+// CanSuper_admin schema.zed:34
 // Object: platform:<id>
 func (obj *ObjPlatform) CanSuper_admin(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "super_admin", obj.Object()
 }
 
-// CanCreate_user schema.zed:37
+// CanCreate_user schema.zed:35
 // Object: platform:<id>
 // Schema: permission create_user = user_admin + super_admin
 func (obj *ObjPlatform) CanCreate_user(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "create_user", obj.Object()
 }
 
-// CanCreate_organization schema.zed:38
+// CanCreate_organization schema.zed:36
 // Object: platform:<id>
 // Schema: permission create_organization = super_admin
 func (obj *ObjPlatform) CanCreate_organization(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
@@ -1467,7 +1467,7 @@ func (obj *ObjTemplate) RelationWorkspace() string {
 	return "workspace"
 }
 
-// Organization schema.zed:212
+// Organization schema.zed:217
 // Relationship: template:<id>#organization@organization:<id>
 func (obj *ObjTemplate) Organization(subs ...*ObjOrganization) *ObjTemplate {
 	for i := range subs {
@@ -1485,7 +1485,7 @@ func (obj *ObjTemplate) Organization(subs ...*ObjOrganization) *ObjTemplate {
 	return obj
 }
 
-// Workspace schema.zed:217
+// Workspace schema.zed:222
 // Relationship: template:<id>#workspace@workspace:<id>
 func (obj *ObjTemplate) Workspace(subs ...*ObjWorkspace) *ObjTemplate {
 	for i := range subs {
@@ -1503,47 +1503,47 @@ func (obj *ObjTemplate) Workspace(subs ...*ObjWorkspace) *ObjTemplate {
 	return obj
 }
 
-// CanView schema.zed:219
+// CanView schema.zed:224
 // Object: template:<id>
 // Schema: permission view = organization->template_viewer + workspace->view
 func (obj *ObjTemplate) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view", obj.Object()
 }
 
-// CanView_insights schema.zed:220
+// CanView_insights schema.zed:225
 // Object: template:<id>
 // Schema: permission view_insights = organization->view_template_insights
 func (obj *ObjTemplate) CanView_insights(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view_insights", obj.Object()
 }
 
-// CanEdit schema.zed:222
+// CanEdit schema.zed:227
 // Object: template:<id>
 func (obj *ObjTemplate) CanEdit(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "edit", obj.Object()
 }
 
-// CanDelete schema.zed:223
+// CanDelete schema.zed:228
 // Object: template:<id>
 // Schema: permission delete = organization->delete_templates
 func (obj *ObjTemplate) CanDelete(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "delete", obj.Object()
 }
 
-// CanEdit_pemissions schema.zed:224
+// CanEdit_pemissions schema.zed:229
 // Object: template:<id>
 // Schema: permission edit_pemissions = organization->manage_template_permissions
 func (obj *ObjTemplate) CanEdit_pemissions(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "edit_pemissions", obj.Object()
 }
 
-// CanUse schema.zed:227
+// CanUse schema.zed:232
 // Object: template:<id>
 func (obj *ObjTemplate) CanUse(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "use", obj.Object()
 }
 
-// CanWorkspace_view schema.zed:230
+// CanWorkspace_view schema.zed:235
 // Object: template:<id>
 func (obj *ObjTemplate) CanWorkspace_view(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "workspace_view", obj.Object()
@@ -1581,7 +1581,7 @@ func (obj *ObjTemplate_version) RelationTemplate() string {
 	return "template"
 }
 
-// Template schema.zed:234
+// Template schema.zed:239
 // Relationship: template_version:<id>#template@template:<id>
 func (obj *ObjTemplate_version) Template(subs ...*ObjTemplate) *ObjTemplate_version {
 	for i := range subs {
@@ -1599,7 +1599,7 @@ func (obj *ObjTemplate_version) Template(subs ...*ObjTemplate) *ObjTemplate_vers
 	return obj
 }
 
-// CanView schema.zed:236
+// CanView schema.zed:241
 // Object: template_version:<id>
 // Schema: permission view = template->view
 func (obj *ObjTemplate_version) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
@@ -1690,7 +1690,7 @@ func (obj *ObjWorkspace) RelationViewer() string {
 	return "viewer"
 }
 
-// Organization schema.zed:153
+// Organization schema.zed:158
 // Relationship: workspace:<id>#organization@organization:<id>
 func (obj *ObjWorkspace) Organization(subs ...*ObjOrganization) *ObjWorkspace {
 	for i := range subs {
@@ -1708,7 +1708,7 @@ func (obj *ObjWorkspace) Organization(subs ...*ObjOrganization) *ObjWorkspace {
 	return obj
 }
 
-// ViewerGroup schema.zed:155
+// ViewerGroup schema.zed:160
 // Relationship: workspace:<id>#viewer@group:<id>#membership
 func (obj *ObjWorkspace) ViewerGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1726,7 +1726,7 @@ func (obj *ObjWorkspace) ViewerGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// ViewerUser schema.zed:155
+// ViewerUser schema.zed:160
 // Relationship: workspace:<id>#viewer@user:<id>
 func (obj *ObjWorkspace) ViewerUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1744,7 +1744,25 @@ func (obj *ObjWorkspace) ViewerUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// EditorGroup schema.zed:156
+// ViewerWorkspace_agent_key schema.zed:160
+// Relationship: workspace:<id>#viewer@workspace_agent_key:<id>
+func (obj *ObjWorkspace) ViewerWorkspace_agent_key(subs ...*ObjWorkspace_agent_key) *ObjWorkspace {
+	for i := range subs {
+		sub := subs[i]
+		obj.Builder.AddRelationship(v1.Relationship{
+			Resource: obj.Obj,
+			Relation: obj.RelationViewer(),
+			Subject: &v1.SubjectReference{
+				Object:           sub.Obj,
+				OptionalRelation: "",
+			},
+			OptionalCaveat: nil,
+		})
+	}
+	return obj
+}
+
+// EditorGroup schema.zed:161
 // Relationship: workspace:<id>#editor@group:<id>#membership
 func (obj *ObjWorkspace) EditorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1762,7 +1780,7 @@ func (obj *ObjWorkspace) EditorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// EditorUser schema.zed:156
+// EditorUser schema.zed:161
 // Relationship: workspace:<id>#editor@user:<id>
 func (obj *ObjWorkspace) EditorUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1780,7 +1798,7 @@ func (obj *ObjWorkspace) EditorUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// DeletorGroup schema.zed:157
+// DeletorGroup schema.zed:162
 // Relationship: workspace:<id>#deletor@group:<id>#membership
 func (obj *ObjWorkspace) DeletorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1798,7 +1816,7 @@ func (obj *ObjWorkspace) DeletorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// DeletorUser schema.zed:157
+// DeletorUser schema.zed:162
 // Relationship: workspace:<id>#deletor@user:<id>
 func (obj *ObjWorkspace) DeletorUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1816,7 +1834,7 @@ func (obj *ObjWorkspace) DeletorUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// SelectorGroup schema.zed:158
+// SelectorGroup schema.zed:163
 // Relationship: workspace:<id>#selector@group:<id>#membership
 func (obj *ObjWorkspace) SelectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1834,7 +1852,7 @@ func (obj *ObjWorkspace) SelectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// SelectorUser schema.zed:158
+// SelectorUser schema.zed:163
 // Relationship: workspace:<id>#selector@user:<id>
 func (obj *ObjWorkspace) SelectorUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1852,7 +1870,7 @@ func (obj *ObjWorkspace) SelectorUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// ConnectorGroup schema.zed:159
+// ConnectorGroup schema.zed:164
 // Relationship: workspace:<id>#connector@group:<id>#membership
 func (obj *ObjWorkspace) ConnectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1870,7 +1888,7 @@ func (obj *ObjWorkspace) ConnectorGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// ConnectorUser schema.zed:159
+// ConnectorUser schema.zed:164
 // Relationship: workspace:<id>#connector@user:<id>
 func (obj *ObjWorkspace) ConnectorUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1888,7 +1906,7 @@ func (obj *ObjWorkspace) ConnectorUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// For_userGroup schema.zed:164
+// For_userGroup schema.zed:169
 // Relationship: workspace:<id>#for_user@group:<id>#membership
 func (obj *ObjWorkspace) For_userGroup(subs ...*ObjGroup) *ObjWorkspace {
 	for i := range subs {
@@ -1906,7 +1924,7 @@ func (obj *ObjWorkspace) For_userGroup(subs ...*ObjGroup) *ObjWorkspace {
 	return obj
 }
 
-// For_userUser schema.zed:164
+// For_userUser schema.zed:169
 // Relationship: workspace:<id>#for_user@user:<id>
 func (obj *ObjWorkspace) For_userUser(subs ...*ObjUser) *ObjWorkspace {
 	for i := range subs {
@@ -1924,39 +1942,39 @@ func (obj *ObjWorkspace) For_userUser(subs ...*ObjUser) *ObjWorkspace {
 	return obj
 }
 
-// CanWorkspace_owner schema.zed:168
+// CanWorkspace_owner schema.zed:173
 // Object: workspace:<id>
 func (obj *ObjWorkspace) CanWorkspace_owner(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "workspace_owner", obj.Object()
 }
 
-// CanView schema.zed:172
+// CanView schema.zed:177
 // Object: workspace:<id>
 func (obj *ObjWorkspace) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view", obj.Object()
 }
 
-// CanEdit schema.zed:178
+// CanEdit schema.zed:183
 // Object: workspace:<id>
 // Schema: permission edit = organization->edit_workspaces + editor + workspace_owner
 func (obj *ObjWorkspace) CanEdit(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "edit", obj.Object()
 }
 
-// CanDelete schema.zed:179
+// CanDelete schema.zed:184
 // Object: workspace:<id>
 // Schema: permission delete = organization->delete_workspaces + deletor + workspace_owner
 func (obj *ObjWorkspace) CanDelete(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "delete", obj.Object()
 }
 
-// CanSelect_template_version schema.zed:181
+// CanSelect_template_version schema.zed:186
 // Object: workspace:<id>
 func (obj *ObjWorkspace) CanSelect_template_version(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "select_template_version", obj.Object()
 }
 
-// CanSsh schema.zed:182
+// CanSsh schema.zed:187
 // Object: workspace:<id>
 // Schema: permission ssh = connector + workspace_owner
 func (obj *ObjWorkspace) CanSsh(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
@@ -1995,7 +2013,7 @@ func (obj *ObjWorkspace_agent) RelationWorkspace() string {
 	return "workspace"
 }
 
-// Workspace schema.zed:196
+// Workspace schema.zed:201
 // Relationship: workspace_agent:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_agent) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_agent {
 	for i := range subs {
@@ -2013,11 +2031,39 @@ func (obj *ObjWorkspace_agent) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_ag
 	return obj
 }
 
-// CanView schema.zed:198
+// CanView schema.zed:203
 // Object: workspace_agent:<id>
 // Schema: permission view = workspace->view
 func (obj *ObjWorkspace_agent) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view", obj.Object()
+}
+
+type ObjWorkspace_agent_key struct {
+	Obj              *v1.ObjectReference
+	OptionalRelation string
+	Builder          *Builder
+}
+
+func (b *Builder) Workspace_agent_key(id fmt.Stringer) *ObjWorkspace_agent_key {
+	o := &ObjWorkspace_agent_key{
+		Obj: &v1.ObjectReference{
+			ObjectType: "workspace_agent_key",
+			ObjectId:   id.String(),
+		},
+		Builder: b,
+	}
+	return o
+}
+
+func (obj *ObjWorkspace_agent_key) Object() *v1.ObjectReference {
+	return obj.Obj
+}
+
+func (obj *ObjWorkspace_agent_key) AsSubject() *v1.SubjectReference {
+	return &v1.SubjectReference{
+		Object:           obj.Object(),
+		OptionalRelation: obj.OptionalRelation,
+	}
 }
 
 type ObjWorkspace_build struct {
@@ -2052,7 +2098,7 @@ func (obj *ObjWorkspace_build) RelationWorkspace() string {
 	return "workspace"
 }
 
-// Workspace schema.zed:187
+// Workspace schema.zed:192
 // Relationship: workspace_build:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_build) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_build {
 	for i := range subs {
@@ -2070,7 +2116,7 @@ func (obj *ObjWorkspace_build) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_bu
 	return obj
 }
 
-// CanView schema.zed:192
+// CanView schema.zed:197
 // Object: workspace_build:<id>
 func (obj *ObjWorkspace_build) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
 	return ctx, "view", obj.Object()
@@ -2108,7 +2154,7 @@ func (obj *ObjWorkspace_resources) RelationWorkspace() string {
 	return "workspace"
 }
 
-// Workspace schema.zed:202
+// Workspace schema.zed:207
 // Relationship: workspace_resources:<id>#workspace@workspace:<id>
 func (obj *ObjWorkspace_resources) Workspace(subs ...*ObjWorkspace) *ObjWorkspace_resources {
 	for i := range subs {
@@ -2126,7 +2172,7 @@ func (obj *ObjWorkspace_resources) Workspace(subs ...*ObjWorkspace) *ObjWorkspac
 	return obj
 }
 
-// CanView schema.zed:204
+// CanView schema.zed:209
 // Object: workspace_resources:<id>
 // Schema: permission view = workspace->view
 func (obj *ObjWorkspace_resources) CanView(ctx context.Context) (context.Context, string, *v1.ObjectReference) {
