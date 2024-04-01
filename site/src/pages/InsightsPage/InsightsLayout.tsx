@@ -1,8 +1,10 @@
+import type { FC, PropsWithChildren } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { Margins } from "components/Margins/Margins";
 import { PageHeader, PageHeaderTitle } from "components/PageHeader/PageHeader";
 import { TabLink, Tabs, TabsList } from "components/Tabs/Tabs";
-import { FC, PropsWithChildren } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { pageTitle } from "utils/page";
 
 const InsightsLayout: FC<PropsWithChildren> = ({ children = <Outlet /> }) => {
   const location = useLocation();
@@ -11,28 +13,29 @@ const InsightsLayout: FC<PropsWithChildren> = ({ children = <Outlet /> }) => {
 
   return (
     <Margins>
+      <Helmet>
+        <title>{pageTitle("Intel")}</title>
+      </Helmet>
       <PageHeader>
-        <PageHeaderTitle>Insights</PageHeaderTitle>
+        <PageHeaderTitle>Intel</PageHeaderTitle>
       </PageHeader>
       <Tabs active={activeTab}>
         <TabsList>
-          <TabLink to="/insights" value="summary">
+          <TabLink to="/intel" value="summary">
             Summary
           </TabLink>
-          <TabLink to="/insights/tools" value="tools">
-            Tools
+          <TabLink to="/intel/tools" value="tools">
+            Consistency
           </TabLink>
-          <TabLink to="/insights/commands" value="commands">
+          <TabLink to="/intel/commands" value="commands">
             Commands
           </TabLink>
-          <TabLink to="/insights/editors" value="editors">
+          <TabLink to="/intel/editors" value="editors">
             Editors
           </TabLink>
         </TabsList>
       </Tabs>
-      <Margins>
         {children}
-      </Margins>
     </Margins>
   );
 };
